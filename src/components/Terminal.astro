@@ -1,0 +1,168 @@
+---
+// Interactive CLI terminal component
+---
+
+<div class="terminal-window max-w-3xl mx-auto">
+  <!-- Title bar -->
+  <div class="flex items-center gap-2 px-4 py-3 bg-[var(--color-surface)] border-b border-[var(--color-border)]">
+    <span class="terminal-dot bg-[#FF5F56]"></span>
+    <span class="terminal-dot bg-[#FFBD2E]"></span>
+    <span class="terminal-dot bg-[#27C93F]"></span>
+    <span class="flex-1 text-center text-xs font-mono text-[var(--color-text-muted)]">kshitij ~ terminal</span>
+  </div>
+
+  <!-- Terminal body -->
+  <div id="terminal-body" class="p-4 sm:p-6 font-mono text-sm max-h-[70vh] overflow-y-auto">
+    <!-- ASCII Art -->
+    <pre class="text-[var(--color-cyan)] text-[8px] sm:text-[10px] leading-tight mb-4 glow-text-subtle">
+██╗  ██╗███████╗██╗  ██╗██╗████████╗██╗     ██╗
+██║ ██╔╝██╔════╝██║  ██║██║╚══██╔══╝██║     ██║
+█████╔╝ ███████╗███████║██║   ██║   ██║     ██║
+██╔═██╗ ╚════██║██╔══██║██║   ██║   ██║██   ██║
+██║  ██╗███████║██║  ██║██║   ██║   ██║╚█████╔╝
+╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝ ╚════╝</pre>
+
+    <p class="text-[var(--color-green)] mb-1">Welcome to Kshitij's Terminal</p>
+    <p class="text-[var(--color-text-muted)] mb-4">Type <span class="text-[var(--color-amber)]">help</span> for available commands. Try <span class="text-[var(--color-cyan)]">sudo hire-me</span> for a surprise!</p>
+
+    <!-- Quick command buttons -->
+    <div class="flex flex-wrap gap-2 mb-6">
+      {['whoami', 'projects', 'skills', 'contact', 'help'].map((cmd) => (
+        <button
+          class="terminal-cmd-btn px-3 py-1 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-full text-xs text-[var(--color-text-muted)] hover:border-[var(--color-cyan)]/50 hover:text-[var(--color-cyan)] transition-all cursor-pointer"
+          data-cmd={cmd}
+        >
+          {cmd}
+        </button>
+      ))}
+    </div>
+
+    <!-- Output area -->
+    <div id="terminal-output"></div>
+
+    <!-- Input line -->
+    <div class="flex items-center gap-2 mt-2">
+      <span class="text-[var(--color-cyan)] shrink-0">kshitij@portfolio:~$</span>
+      <input
+        type="text"
+        id="terminal-input"
+        class="flex-1 bg-transparent text-[var(--color-text)] outline-none caret-[var(--color-cyan)]"
+        placeholder="Type a command..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+  </div>
+</div>
+
+<script>
+  const input = document.getElementById('terminal-input') as HTMLInputElement;
+  const output = document.getElementById('terminal-output')!;
+  const body = document.getElementById('terminal-body')!;
+
+  const commands: Record<string, string> = {
+    help: `<span class="text-[var(--color-amber)]">Available commands:</span>
+  <span class="text-[var(--color-green)]">whoami</span>      - About me
+  <span class="text-[var(--color-green)]">projects</span>    - Featured projects
+  <span class="text-[var(--color-green)]">skills</span>      - Tech stack
+  <span class="text-[var(--color-green)]">experience</span>  - Work experience
+  <span class="text-[var(--color-green)]">contact</span>     - Get in touch
+  <span class="text-[var(--color-green)]">education</span>   - Education details
+  <span class="text-[var(--color-green)]">clear</span>       - Clear terminal
+  <span class="text-[var(--color-green)]">home</span>        - Go to portfolio
+  <span class="text-[var(--color-cyan)]">sudo hire-me</span> - ???`,
+
+    whoami: `<span class="text-[var(--color-cyan)]">Kshitij Betwal</span>
+  <span class="text-[var(--color-text-muted)]">Builder Resident (R&D) at Zeoxia</span>
+  <span class="text-[var(--color-text-muted)]">Building intelligent systems at the intersection of AI & software engineering</span>
+  <span class="text-[var(--color-text-muted)]">Location: Bengaluru, India</span>`,
+
+    projects: `<span class="text-[var(--color-amber)]">Featured Projects:</span>
+  <span class="text-[var(--color-cyan)]">01.</span> <span class="text-[var(--color-text)]">FakeCallShield</span> — AI-powered spoofed call detection (TypeScript, Android, ML)
+  <span class="text-[var(--color-cyan)]">02.</span> <span class="text-[var(--color-text)]">Predictive Maintenance</span> — Full-stack ML platform (FastAPI, React, AWS)
+  <span class="text-[var(--color-cyan)]">03.</span> <span class="text-[var(--color-text)]">Credit Card Dashboard</span> — Analytics dashboard (Power BI, DAX, SQL)
+  <span class="text-[var(--color-cyan)]">04.</span> <span class="text-[var(--color-text)]">inSpectra</span> — GenAI document analytics (Python, Vector DB, LLMs)
+  <span class="text-[var(--color-cyan)]">05.</span> <span class="text-[var(--color-text)]">Sentiment Engine</span> — NLP classifier, 92% accuracy (Scikit-learn)`,
+
+    skills: `<span class="text-[var(--color-amber)]">Tech Stack:</span>
+  <span class="text-[var(--color-cyan)]">Languages</span>    Python, C++, JavaScript, TypeScript, SQL
+  <span class="text-[var(--color-amber)]">Frameworks</span>   FastAPI, React.js, Node.js, Tailwind, PyTorch
+  <span class="text-[var(--color-blue)]">Cloud</span>        AWS (EC2, Cognito), Docker, Git, CI/CD
+  <span class="text-[var(--color-blue)]">AI/ML</span>        Machine Learning, NLP, Computer Vision, Vector DBs
+  <span class="text-[var(--color-green)]">Concepts</span>     DSA, System Design, OOPS, Distributed Computing`,
+
+    experience: `<span class="text-[var(--color-amber)]">Experience:</span>
+  <span class="text-[var(--color-green)]">●</span> <span class="text-[var(--color-text)]">Builder Resident (R&D)</span> at <span class="text-[var(--color-amber)]">Zeoxia</span> — Amsterdam (Remote) — Jan 2026 - Present
+    AI systems, edge computing, developer tooling`,
+
+    education: `<span class="text-[var(--color-amber)]">Training:</span>
+  <span class="text-[var(--color-text)]">Self-directed — projects, hackathons, open source.</span>
+  Formal details are in the resume if you really need them.`,
+
+    contact: `<span class="text-[var(--color-amber)]">Get in touch:</span>
+  <span class="text-[var(--color-cyan)]">Email</span>     kshitij.betwal@gmail.com
+  <span class="text-[var(--color-blue)]">GitHub</span>    github.com/theNeuralHorizon
+  <span class="text-[var(--color-blue)]">LinkedIn</span>  linkedin.com/in/kshitijbetwal`,
+
+    'sudo hire-me': `<span class="text-[var(--color-green)]">✓ Request received!</span>
+  <span class="text-[var(--color-amber)]">Initializing hiring protocol...</span>
+  <span class="text-[var(--color-text-muted)]">Compiling resume... ████████████████ 100%</span>
+  <span class="text-[var(--color-text-muted)]">Loading skills... ████████████████ 100%</span>
+  <span class="text-[var(--color-text-muted)]">Deploying enthusiasm... ████████████████ 100%</span>
+
+  <span class="text-[var(--color-cyan)]">Ready to join your team!</span> 🚀
+  <span class="text-[var(--color-text-muted)]">Drop me a line: kshitij.betwal@gmail.com</span>`,
+
+    'summon coffee': `<span class="text-[var(--color-amber)]">☕ Brewing...</span>
+  <span class="text-[var(--color-text-muted)]">Warning: This is the fuel that powers all my code.</span>
+  <span class="text-[var(--color-green)]">Coffee deployed. Productivity increased by 200%.</span>`,
+  };
+
+  function executeCommand(cmd: string) {
+    const trimmed = cmd.trim().toLowerCase();
+
+    // Add command to output
+    const cmdLine = document.createElement('div');
+    cmdLine.innerHTML = `<span class="text-[var(--color-cyan)]">kshitij@portfolio:~$</span> <span class="text-[var(--color-text)]">${cmd}</span>`;
+    cmdLine.className = 'mb-1';
+    output.appendChild(cmdLine);
+
+    if (trimmed === 'clear') {
+      output.innerHTML = '';
+      return;
+    }
+
+    if (trimmed === 'home') {
+      window.location.href = '/portfolio/';
+      return;
+    }
+
+    const response = commands[trimmed];
+    const result = document.createElement('div');
+    result.className = 'mb-4 whitespace-pre-wrap leading-relaxed';
+    result.innerHTML = response || `<span class="text-[#FF5F56]">Command not found: ${cmd}</span>\n<span class="text-[var(--color-text-muted)]">Type 'help' for available commands.</span>`;
+    output.appendChild(result);
+
+    body.scrollTop = body.scrollHeight;
+  }
+
+  // Input handler
+  input?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && input.value.trim()) {
+      executeCommand(input.value);
+      input.value = '';
+    }
+  });
+
+  // Quick command buttons
+  document.querySelectorAll('.terminal-cmd-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const cmd = (btn as HTMLElement).dataset.cmd;
+      if (cmd) executeCommand(cmd);
+    });
+  });
+
+  // Auto-focus input
+  input?.focus();
+  body?.addEventListener('click', () => input?.focus());
+</script>

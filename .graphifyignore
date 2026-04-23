@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build artifacts
+dist/
+build/
+out/
+.next/
+.nuxt/
+target/
+.gradle/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+
+# Lockfiles
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+poetry.lock
+uv.lock
+Pipfile.lock
+
+# Binary / data
+*.sqlite
+*.db
+*.parquet
+*.rpm
+*.pem
+*.apk
+*.aab
+*.log
+
+# Generated / minified
+*.min.js
+*.min.css
+*.map
+
+# Graphify output
+graphify-out/

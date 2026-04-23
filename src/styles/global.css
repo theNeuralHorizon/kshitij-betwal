@@ -1,0 +1,209 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --color-void: #030303;
+  --color-deep: #0a0e17;
+  --color-surface: #111827;
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-active: rgba(34, 211, 238, 0.2);
+  --color-text: #e2e8f0;
+  --color-text-muted: #64748b;
+  --color-text-dim: #334155;
+  --color-cyan: #22d3ee;
+  --color-amber: #f59e0b;
+  --color-blue: #3b82f6;
+  --color-red: #ef4444;
+  --color-green: #22c55e;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  -webkit-text-size-adjust: 100%;
+  /* Enable momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  background-color: var(--color-void);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  /* Prevent overscroll bounce from showing white on iOS */
+  overscroll-behavior: none;
+}
+
+/* ── Grid overlay (mission control) ── */
+.grid-overlay {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+/* ── System label ── */
+.sys-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+/* ── Section wrapper ── */
+.section-wrap {
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  padding-block: clamp(3rem, 8vw, 5rem);
+  /* Skip rendering off-screen sections — browser paints only what's visible */
+  content-visibility: auto;
+  contain-intrinsic-size: 0 800px;
+}
+@media (min-width: 640px) {
+  .section-wrap { padding-inline: 1.5rem; }
+}
+
+/* ── Fluid display headings (section + hero) ── */
+.display-hero {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.02;
+  font-size: clamp(3rem, 12vw, 7rem);
+}
+
+.display-section {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  font-size: clamp(2rem, 6vw, 3.75rem);
+}
+
+/* ── Panel ── */
+.panel {
+  background: var(--color-deep);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+@media (hover: hover) {
+  .panel:hover { border-color: rgba(255, 255, 255, 0.12); }
+}
+
+/* ── Spotlight animation ── */
+@keyframes spotlight {
+  0% { opacity: 0; transform: translate(-72%, -62%) scale(0.5); }
+  100% { opacity: 1; transform: translate(-50%, -40%) scale(1); }
+}
+.animate-spotlight {
+  animation: spotlight 2s ease 0.75s 1 forwards;
+}
+
+/* ── Loader ── */
+.loader {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-cyan);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Scroll animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+[data-animate] { opacity: 0; will-change: opacity, transform; }
+[data-animate].is-visible {
+  animation: fadeIn 0.5s ease-out forwards;
+  will-change: auto;
+}
+
+.stagger > [data-animate]:nth-child(1) { animation-delay: 0s; }
+.stagger > [data-animate]:nth-child(2) { animation-delay: 0.08s; }
+.stagger > [data-animate]:nth-child(3) { animation-delay: 0.16s; }
+.stagger > [data-animate]:nth-child(4) { animation-delay: 0.24s; }
+.stagger > [data-animate]:nth-child(5) { animation-delay: 0.32s; }
+.stagger > [data-animate]:nth-child(6) { animation-delay: 0.4s; }
+
+/* ── Marquee ── */
+.marquee-container {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+.marquee-track {
+  display: flex;
+  gap: 1.5rem;
+  animation: marquee 40s linear infinite;
+  width: max-content;
+  will-change: transform;
+}
+@media (hover: hover) {
+  .marquee-track:hover { animation-play-state: paused; }
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--color-void); }
+::-webkit-scrollbar-thumb { background: var(--color-text-dim); border-radius: 2px; }
+
+::selection {
+  background-color: rgba(34, 211, 238, 0.2);
+  color: var(--color-text);
+}
+
+/* ── Tilt cards: only apply preserve-3d on desktop ── */
+@media (hover: hover) and (pointer: fine) {
+  .tilt-card {
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+}
+
+/* ── Touch targets: min 44x44 per WCAG ── */
+.tap-target { min-height: 44px; min-width: 44px; }
+
+/* ── Focus visible for keyboard users ── */
+:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-animate] { opacity: 1; transform: none; }
+  .marquee-track { animation: none; }
+  .animate-spotlight { animation: none; opacity: 0.3; }
+}
+
+/* ── Disable heavy animations on low-end devices ── */
+@media (max-width: 640px) and (prefers-reduced-motion: no-preference) {
+  .marquee-track { animation-duration: 60s; }
+}

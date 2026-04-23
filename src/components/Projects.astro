@@ -1,0 +1,124 @@
+---
+import ProjectCard from './ProjectCard.astro';
+
+// Top 6 projects — Predictive Maintenance first (it's actually live)
+const projects = [
+  {
+    title: 'Predictive Maintenance System',
+    description: 'Live in production, not just on my laptop. FastAPI microservice serving Random Forest and Isolation Forest predictions to a React dashboard. Deployed on Render and Vercel with GitHub OAuth — feel free to log in and try it.',
+    tags: ['FastAPI', 'React', 'Scikit-learn', 'AWS'],
+    github: 'https://github.com/theNeuralHorizon/predictive-maintenance-system',
+    live: 'https://predictive-maintenance-system-two.vercel.app',
+    featured: true,
+    language: 'Python',
+  },
+  {
+    title: 'FakeCallShield',
+    description: 'Android app that detects AI-generated and spoofed phone calls in real time. 104 acoustic features (MFCC, jitter, shimmer, HNR) feed a pure-TypeScript MLP running on-device in ~2ms. Zero network calls. Fuses carrier STIR/SHAKEN attestation with neural voice analysis.',
+    tags: ['Android', 'React Native', 'ML', 'Audio DSP'],
+    github: 'https://github.com/theNeuralHorizon/FakeCallShield-',
+    featured: true,
+    language: 'TypeScript',
+  },
+  {
+    title: 'skam',
+    description: 'Autonomous chaos engineering on Kubernetes. Six Go microservices inject controlled failures while Isolation Forest and LSTM Autoencoder models detect anomalies and auto-remediate pod kills, memory pressure, and cascading faults. Reliability through surviving incidents, not avoiding them.',
+    tags: ['Go', 'Kubernetes', 'PyTorch', 'Prometheus'],
+    github: 'https://github.com/theNeuralHorizon/skam',
+    featured: true,
+    language: 'Python',
+  },
+  {
+    title: 'drifting-oracle',
+    description: 'Dual-loop ML observability for credit risk. PSI-based drift detection triggers auto-retrain at Basel-standard thresholds, and an LLM hallucination monitor catches fabricated RBI regulations in rejection letters before they reach customers. Built for HackBricks 2026 (Databricks × Manipal).',
+    tags: ['Databricks', 'MLflow', 'LightGBM', 'PySpark'],
+    github: 'https://github.com/theNeuralHorizon/drifting-oracle',
+    featured: true,
+    language: 'Python',
+  },
+  {
+    title: 'IncidentEnv',
+    description: 'Reinforcement learning environment for AI SRE agents, built for the Meta × HuggingFace × PyTorch OpenEnv Hackathon. 12-command action space across simulated microservice incidents with red-herring causal traps and rubric-based scoring. Think CTFs, but for language models.',
+    tags: ['FastAPI', 'OpenEnv', 'Docker', 'pytest'],
+    github: 'https://github.com/theNeuralHorizon/MetaPyTorchScalerHackathon',
+    language: 'Python',
+  },
+  {
+    title: 'Credit Card Transaction Dashboard',
+    description: 'Interactive Power BI dashboard analyzing 10,000+ transactions with complex DAX measures. Cut stakeholder reporting time by 30% — as it turns out, self-updating numbers are popular.',
+    tags: ['Power BI', 'DAX', 'SQL'],
+    github: 'https://github.com/theNeuralHorizon/Credit-Card-Financial-Dashboard',
+    language: 'Power BI',
+  },
+];
+
+const moreRepos = [
+  { name: 'mobilityyy', url: 'https://github.com/theNeuralHorizon/mobilityyy', tag: 'ROS 2 / Gazebo' },
+  { name: 'drishti_', url: 'https://github.com/theNeuralHorizon/drishti_', tag: 'Next.js / Gemini' },
+  { name: 'mcp-weather', url: 'https://github.com/theNeuralHorizon/mcp-weather', tag: 'Claude MCP' },
+  { name: 'login-page-demo', url: 'https://github.com/theNeuralHorizon/login-page-demo', tag: 'AWS Cognito' },
+];
+---
+
+<section id="projects" class="section-wrap">
+  <div class="sys-label mb-4" data-animate>// PROJECTS</div>
+  <h2 data-animate class="display-section text-[var(--color-text)] mb-4">
+    Selected Work
+  </h2>
+  <p data-animate class="text-[var(--color-text-muted)] text-base sm:text-lg mb-8 max-w-xl">
+    A mix of shipped products, hackathon projects, and experiments still finding their shape.
+    Source is on GitHub &mdash; the commit history tells the fuller story.
+  </p>
+
+  <!-- Search: 44px tap target on mobile -->
+  <div class="relative mb-6" data-animate>
+    <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-dim)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="text" id="project-search" placeholder="Search projects..." aria-label="Search projects"
+      class="w-full max-w-xs pl-10 pr-4 py-3 md:py-2 bg-[var(--color-deep)] border border-[var(--color-border)] rounded-md text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-dim)] focus:outline-none focus:border-[var(--color-border-active)] transition-colors font-mono" />
+  </div>
+
+  <!-- Equal-size grid — all cards same width -->
+  <div id="project-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 auto-rows-fr">
+    {projects.map((p) => <ProjectCard {...p} />)}
+  </div>
+
+  <p id="no-results" class="hidden text-center text-[var(--color-text-dim)] text-sm font-mono py-8">No projects match your search.</p>
+
+  <!-- More repos -->
+  <div data-animate>
+    <div class="sys-label mb-3">MORE FROM GITHUB</div>
+    <div class="flex gap-3 overflow-x-auto pb-2">
+      {moreRepos.map((r) => (
+        <a href={r.url} target="_blank" rel="noopener noreferrer" class="shrink-0 px-4 py-2.5 panel text-sm font-mono text-[var(--color-text-muted)] hover:text-[var(--color-cyan)] transition-colors flex items-center gap-3">
+          <span>{r.name}</span>
+          <span class="text-[10px] text-[var(--color-text-dim)]">{r.tag}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  const input = document.getElementById('project-search') as HTMLInputElement;
+  const grid = document.getElementById('project-grid');
+  const noResults = document.getElementById('no-results');
+  if (input && grid && noResults) {
+    const cards = grid.querySelectorAll('[data-project-card]');
+    input.addEventListener('input', () => {
+      const q = input.value.toLowerCase().trim();
+      let vis = 0;
+      cards.forEach((c) => {
+        const el = c as HTMLElement;
+        const match = !q || (el.dataset.title || '').includes(q) || (el.dataset.tags || '').includes(q);
+        const wrapper = el.closest('[data-project-card]')?.parentElement;
+        if (wrapper && wrapper !== grid) {
+          wrapper.style.display = match ? '' : 'none';
+        } else {
+          el.style.display = match ? '' : 'none';
+        }
+        if (match) vis++;
+      });
+      noResults.classList.toggle('hidden', vis > 0);
+    });
+  }
+</script>

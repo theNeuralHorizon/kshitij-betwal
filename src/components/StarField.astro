@@ -1,0 +1,169 @@
+---
+// Clean star field — white/blue stars, occasional shooting star. No colored particles.
+---
+
+<canvas id="starfield" class="fixed inset-0 w-full h-full pointer-events-none" style="z-index: -10; opacity: 0.5;"></canvas>
+
+<script>
+  const canvas = document.getElementById('starfield') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+  let w = 0, h = 0, mx = 0, my = 0;
+
+  interface Star { x: number; y: number; r: number; a: number; speed: number; blue: boolean; }
+  interface Streak { x: number; y: number; len: number; speed: number; a: number; active: boolean; }
+
+  const stars: Star[] = [];
+  let streak: Streak = { x: 0, y: 0, len: 0, speed: 0, a: 0, active: false };
+
+  const isDesktop = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const isMobile = !isDesktop;
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
+    w = innerWidth;
+    h = innerHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function init() {
+    stars.length = 0;
+    // Fewer stars on mobile — saves paint time
+    const maxStars = isMobile ? 70 : 150;
+    const density = isMobile ? 12000 : 8000;
+    const count = Math.min(maxStars, Math.floor((w * h) / density));
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * w, y: Math.random() * h,
+        r: Math.random() * 1.5 + 0.3,
+        a: Math.random() * 0.6 + 0.2,
+        speed: Math.random() * 0.008 + 0.002,
+        blue: Math.random() > 0.7,
+      });
+    }
+  }
+
+  function spawnStreak() {
+    if (streak.active || Math.random() > 0.003) return;
+    streak = {
+      x: Math.random() * w * 0.8, y: Math.random() * h * 0.4,
+      len: Math.random() * 80 + 40, speed: Math.random() * 6 + 4,
+      a: 1, active: true,
+    };
+  }
+
+  let running = true;
+
+  function draw(t: number) {
+    if (!running) return;
+    ctx.clearRect(0, 0, w, h);
+    const px = (mx / w - 0.5) * 6;
+    const py = (my / h - 0.5) * 6;
+
+    for (const s of stars) {
+      const flicker = Math.sin(t * s.speed) * 0.3 + 0.7;
+      const alpha = s.a * flicker;
+      ctx.beginPath();
+      ctx.arc(s.x + px * 0.2, s.y + py * 0.2, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = s.blue
+        ? `rgba(147, 197, 253, ${alpha})`
+        : `rgba(226, 232, 240, ${alpha})`;
+      ctx.fill();
+    }
+
+    // Shooting star
+    spawnStreak();
+    if (streak.active) {
+      streak.x += streak.speed;
+      streak.y += streak.speed * 0.4;
+      streak.a -= 0.015;
+      if (streak.a <= 0) { streak.active = false; }
+      else {
+        const grad = ctx.createLinearGradient(streak.x, streak.y, streak.x - streak.len, streak.y - streak.len * 0.4);
+        grad.addColorStop(0, `rgba(226, 232, 240, ${streak.a})`);
+        grad.addColorStop(1, 'transparent');
+        ctx.beginPath();
+        ctx.moveTo(streak.x, streak.y);
+        ctx.lineTo(streak.x - streak.len, streak.y - streak.len * 0.4);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  // ── Hyperdrive mode (Konami code) ──
+  let hyperdrive = false;
+  let hyperTimer = 0;
+  document.addEventListener('hyperdrive', () => {
+    hyperdrive = true;
+    hyperTimer = 120; // frames (~2 seconds)
+  });
+
+  function drawHyperdrive(t: number) {
+    ctx.clearRect(0, 0, w, h);
+    const cx = w / 2, cy = h / 2;
+    for (const s of stars) {
+      const dx = s.x - cx, dy = s.y - cy;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      const nx = dx / len, ny = dy / len;
+      const streakLen = len * 0.3;
+      const grad = ctx.createLinearGradient(s.x, s.y, s.x - nx * streakLen, s.y - ny * streakLen);
+      grad.addColorStop(0, s.blue ? 'rgba(34, 211, 238, 0.9)' : 'rgba(226, 232, 240, 0.9)');
+      grad.addColorStop(1, 'transparent');
+      ctx.beginPath();
+      ctx.moveTo(s.x, s.y);
+      ctx.lineTo(s.x - nx * streakLen, s.y - ny * streakLen);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      // Move stars outward
+      s.x += nx * 8;
+      s.y += ny * 8;
+      if (s.x < -20 || s.x > w + 20 || s.y < -20 || s.y > h + 20) {
+        s.x = cx + (Math.random() - 0.5) * 100;
+        s.y = cy + (Math.random() - 0.5) * 100;
+      }
+    }
+    hyperTimer--;
+    if (hyperTimer <= 0) { hyperdrive = false; init(); }
+    requestAnimationFrame(hyperdrive ? drawHyperdrive : draw);
+  }
+
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  resize(); init();
+  if (!reduced) {
+    // Only track mouse on desktop — skip on touch devices
+    if (isDesktop) {
+      addEventListener('mousemove', (e) => { mx = e.clientX; my = e.clientY; }, { passive: true });
+    }
+    requestAnimationFrame(draw);
+  } else { draw(0); }
+
+  // Debounced resize
+  let resizeTimer: number | null = null;
+  addEventListener('resize', () => {
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => { resize(); init(); }, 150);
+  });
+
+  // Pause animation when tab is hidden — zero CPU/GPU in background
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      running = false;
+    } else if (!reduced) {
+      running = true;
+      requestAnimationFrame(draw);
+    }
+  });
+
+  // Listen for hyperdrive trigger
+  document.addEventListener('hyperdrive', () => {
+    if (!hyperdrive) { hyperdrive = true; hyperTimer = 120; requestAnimationFrame(drawHyperdrive); }
+  });
+</script>

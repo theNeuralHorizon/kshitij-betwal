@@ -1,0 +1,71 @@
+---
+import GitHub from './icons/GitHub.astro';
+import ExternalLink from './icons/ExternalLink.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  tags: string[];
+  github?: string;
+  live?: string;
+  featured?: boolean;
+  language?: string;
+}
+
+const { title, description, tags, github, live, featured, language } = Astro.props;
+
+const langDotColor: Record<string, string> = {
+  TypeScript: '#3b82f6',
+  Python: '#22c55e',
+  JavaScript: '#f59e0b',
+  'Power BI': '#f59e0b',
+};
+const dot = language ? langDotColor[language] || '#64748b' : '#64748b';
+---
+
+<div
+  class="panel p-5 group tilt-card h-full flex flex-col"
+  data-project-card
+  data-tags={tags.join(',').toLowerCase()}
+  data-title={title.toLowerCase()}
+>
+  <div class="flex items-start justify-between mb-3">
+    <div>
+      {featured && <span class="font-mono text-[9px] text-[var(--color-text-dim)] tracking-[0.2em] uppercase block mb-1">FEATURED</span>}
+      <h3 class="text-base font-[var(--font-display)] font-semibold text-[var(--color-text)] group-hover:text-[var(--color-cyan)] transition-colors">{title}</h3>
+    </div>
+    <div class="flex items-center gap-2 shrink-0 ml-4">
+      {github && (
+        <a href={github} target="_blank" rel="noopener noreferrer" class="text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors" aria-label="Source">
+          <GitHub class="w-4 h-4" />
+        </a>
+      )}
+      {live && (
+        <a href={live} target="_blank" rel="noopener noreferrer" class="text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors" aria-label="Demo">
+          <ExternalLink class="w-4 h-4" />
+        </a>
+      )}
+    </div>
+  </div>
+
+  <p class="text-sm text-[var(--color-text-muted)] leading-relaxed mb-4 flex-1">{description}</p>
+
+  <div class="flex items-center gap-3 flex-wrap mt-auto">
+    {language && (
+      <span class="flex items-center gap-1.5 text-[11px] text-[var(--color-text-dim)] font-mono">
+        <span class="w-2 h-2 rounded-full" style={`background: ${dot}`}></span>
+        {language}
+      </span>
+    )}
+    <span class="text-[11px] text-[var(--color-text-dim)]">
+      {tags.join(' / ')}
+    </span>
+  </div>
+</div>
+
+<style>
+  .tilt-card {
+    transition: transform 0.15s ease-out;
+    transform-style: preserve-3d;
+  }
+</style>
