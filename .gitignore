@@ -28,3 +28,7 @@ pnpm-debug.log*
 .playwright-mcp/
 graphify-out/
 theNeuralHorizon/
+
+# reference design assets (not source code)
+make a portfolio/
+make a portfolio.zip
