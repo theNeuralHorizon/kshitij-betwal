@@ -15,6 +15,14 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    // Force a single React copy so @splinetool/react-spline doesn't bundle its own
+    // (the duplicate React breaks IntersectionObserver state and hides project cards).
+    resolve: {
+      dedupe: ['react', 'react-dom'],
+    },
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'react/jsx-runtime'],
+    },
   },
 
   integrations: [react()],

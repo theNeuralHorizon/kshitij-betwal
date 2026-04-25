@@ -3,7 +3,8 @@
 import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react"
 import { PORTFOLIO, type Project } from "./data"
 
-// Lazy-loaded visuals (contact earth only)
+// Lazy-loaded visuals (hero robot + contact earth)
+const Spline = lazy(() => import("@splinetool/react-spline"))
 const RotatingEarth = lazy(() => import("../ui/wireframe-dotted-globe"))
 
 // ── Typography constants ──
@@ -88,6 +89,8 @@ function injectAnimCss(): void {
     @media (max-width: 900px) {
       .cine-section { padding: 80px 24px !important; }
       .cine-hero { padding: 96px 24px 80px !important; min-height: auto !important; }
+      .cine-hero-robot { display: none !important; }
+      .cine-hero-stack { max-width: 100% !important; }
       .cine-nav { padding: 14px 20px !important; gap: 8px !important; }
       .cine-nav-links { display: none !important; }
       .cine-nav-clock { display: none !important; }
@@ -1155,7 +1158,7 @@ export default function Cinematic() {
 
       {/* HERO */}
       <section id="home" className="cine-section cine-hero" style={{ position: "relative", padding: "120px 56px 100px", borderBottom: `1px solid ${line}`, overflow: "hidden", minHeight: "92vh", display: "flex", alignItems: "center" }}>
-        {/* Ambient halo */}
+        {/* Ambient halo (always-on, sits behind robot on desktop, fills space on mobile) */}
         <div aria-hidden style={{
           position: "absolute",
           top: "50%", right: "-10%",
@@ -1176,8 +1179,29 @@ export default function Cinematic() {
           filter: "blur(60px)",
         }} />
 
+        {/* Robot, desktop only (hidden via CSS on <=900px), parallax + fade on scroll */}
+        <div className="cine-hero-robot" style={{
+          position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1,
+          opacity: Math.max(0, 1 - scrollY / 900),
+          transform: `translateY(${scrollY * 0.06}px)`,
+          transition: "opacity .25s",
+        }}>
+          <div style={{
+            position: "absolute", top: 0, right: 0, width: "62%", height: "100%",
+            pointerEvents: "auto",
+            // Radial mask so the robot fades on every edge into the page background
+            WebkitMaskImage: "radial-gradient(ellipse 68% 82% at 62% 50%, #000 32%, rgba(0,0,0,.9) 52%, rgba(0,0,0,.4) 75%, transparent 100%)",
+            maskImage: "radial-gradient(ellipse 68% 82% at 62% 50%, #000 32%, rgba(0,0,0,.9) 52%, rgba(0,0,0,.4) 75%, transparent 100%)",
+          }}>
+            <Suspense fallback={null}>
+              <Spline scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" style={{ width: "100%", height: "100%", background: "transparent" }} />
+            </Suspense>
+          </div>
+        </div>
+
         <div className="cine-hero-stack" style={{
           width: "100%",
+          maxWidth: "min(720px, 52%)",
           transform: `translateY(${scrollY * 0.12}px)`,
           opacity: Math.max(0, 1 - scrollY / 750),
           transition: "opacity .2s",
