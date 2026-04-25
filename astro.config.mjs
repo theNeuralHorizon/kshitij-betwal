@@ -11,7 +11,7 @@ export default defineConfig({
   site: isVercel
     ? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://kshitij-betwal.vercel.app')
     : 'https://theneuralhorizon.github.io',
-  base: isVercel ? '/' : '/portfolio',
+  base: isVercel ? '/' : '/kshitij-betwal',
 
   vite: {
     plugins: [tailwindcss()],
