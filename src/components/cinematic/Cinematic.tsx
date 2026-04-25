@@ -1,7 +1,11 @@
 "use client"
 
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react"
 import { PORTFOLIO, type Project } from "./data"
+
+// Lazy-loaded visuals (hero robot + contact earth)
+const Spline = lazy(() => import("@splinetool/react-spline"))
+const RotatingEarth = lazy(() => import("../ui/wireframe-dotted-globe"))
 
 // ── Typography constants ──
 const DISPLAY = '"Space Grotesk", "Inter Tight", system-ui, sans-serif'
@@ -54,18 +58,18 @@ function injectAnimCss(): void {
   const s = document.createElement("style")
   s.id = "cine-anim-css"
   s.textContent = `
-    .cine-reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); will-change: opacity, transform; }
-    .cine-reveal.in { opacity: 1; transform: translateY(0); }
-    .cine-reveal.slide-left { transform: translateX(-28px); }
-    .cine-reveal.slide-left.in { transform: translateX(0); }
-    .cine-reveal.scale-up { transform: scale(.96); }
+    .cine-reveal { opacity: 0; transform: translateY(42px) scale(.985); filter: blur(6px); transition: opacity 1.1s cubic-bezier(.16,.84,.24,1), transform 1.1s cubic-bezier(.16,.84,.24,1), filter .9s ease-out; will-change: opacity, transform, filter; }
+    .cine-reveal.in { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    .cine-reveal.slide-left { transform: translateX(-42px) scale(.985); }
+    .cine-reveal.slide-left.in { transform: translateX(0) scale(1); }
+    .cine-reveal.scale-up { transform: scale(.94); }
     .cine-reveal.scale-up.in { transform: scale(1); }
-    .cine-stagger > * { opacity: 0; transform: translateY(24px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+    .cine-stagger > * { opacity: 0; transform: translateY(32px); transition: opacity .85s cubic-bezier(.16,.84,.24,1), transform .85s cubic-bezier(.16,.84,.24,1); }
     .cine-stagger.in > * { opacity: 1; transform: translateY(0); }
-    .cine-stagger.in > *:nth-child(1){ transition-delay:.00s } .cine-stagger.in > *:nth-child(2){ transition-delay:.06s }
-    .cine-stagger.in > *:nth-child(3){ transition-delay:.12s } .cine-stagger.in > *:nth-child(4){ transition-delay:.18s }
-    .cine-stagger.in > *:nth-child(5){ transition-delay:.24s } .cine-stagger.in > *:nth-child(6){ transition-delay:.30s }
-    .cine-stagger.in > *:nth-child(7){ transition-delay:.36s } .cine-stagger.in > *:nth-child(n+8){ transition-delay:.42s }
+    .cine-stagger.in > *:nth-child(1){ transition-delay:.00s } .cine-stagger.in > *:nth-child(2){ transition-delay:.08s }
+    .cine-stagger.in > *:nth-child(3){ transition-delay:.16s } .cine-stagger.in > *:nth-child(4){ transition-delay:.24s }
+    .cine-stagger.in > *:nth-child(5){ transition-delay:.32s } .cine-stagger.in > *:nth-child(6){ transition-delay:.40s }
+    .cine-stagger.in > *:nth-child(7){ transition-delay:.48s } .cine-stagger.in > *:nth-child(n+8){ transition-delay:.56s }
     @keyframes cine-marquee { from { transform: translateX(0); } to { transform: translateX(-33.33%); } }
     @keyframes cine-fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes cine-fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -163,29 +167,352 @@ interface HeroProps {
 
 function CineHeroStack({ accent, muted, fg }: HeroProps) {
   return (
-    <div style={{ position: "relative", maxWidth: 1400 }}>
-      <div className="cine-hero-eyebrow" style={{ fontFamily: MONO, fontSize: 12, color: muted, textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: 32, display: "flex", alignItems: "center", gap: 12 }}>
-        <span className="cine-hero-sweep" style={{ display: "inline-block", width: 40, height: 1, background: muted }} />
+    <div style={{ position: "relative", maxWidth: 720 }}>
+      <div className="cine-hero-eyebrow" style={{ fontFamily: MONO, fontSize: 11, color: muted, textTransform: "uppercase", letterSpacing: "0.22em", marginBottom: 24, display: "flex", alignItems: "center", gap: 12 }}>
+        <span className="cine-hero-sweep" style={{ display: "inline-block", width: 36, height: 1, background: muted }} />
         Builder Resident · Zeoxia · Open to 2026 roles
       </div>
       <h1 className="cine-hero-h1" style={{
-        fontSize: "clamp(64px, 11vw, 180px)",
-        fontWeight: 400, letterSpacing: "-0.045em",
-        lineHeight: 0.92, margin: "0 0 40px",
+        fontSize: "clamp(44px, 6.4vw, 92px)",
+        fontWeight: 500, letterSpacing: "-0.035em",
+        lineHeight: 0.98, margin: "0 0 18px",
+        color: fg,
       }}>
-        Kshitij Betwal<br />
-        <span style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 400, color: accent }}>builds scalable</span><br />
-        software.
+        Kshitij Betwal
       </h1>
+      <p className="cine-hero-meta" style={{
+        fontFamily: DISPLAY,
+        fontSize: "clamp(18px, 2vw, 24px)",
+        fontWeight: 300,
+        color: muted,
+        margin: "0 0 40px",
+        letterSpacing: "-0.01em",
+        lineHeight: 1.4,
+      }}>
+        I build <span style={{ fontFamily: SERIF, fontStyle: "italic", color: accent, fontWeight: 400 }}>scalable</span> software.
+      </p>
       <div className="cine-hero-meta" style={{
-        display: "grid", gridTemplateColumns: "repeat(4, auto)", gap: 40,
-        fontFamily: MONO, fontSize: 12, color: muted, textTransform: "uppercase", letterSpacing: "0.12em",
+        display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, auto))", gap: "28px 36px",
+        fontFamily: MONO, fontSize: 10.5, color: muted, textTransform: "uppercase", letterSpacing: "0.14em",
         justifyContent: "start",
       }}>
-        <div>Role<br /><span style={{ color: fg, fontSize: 13, textTransform: "none", letterSpacing: 0, fontFamily: DISPLAY }}>Builder Resident · Zeoxia</span></div>
-        <div>Based<br /><span style={{ color: fg, fontSize: 13, textTransform: "none", letterSpacing: 0, fontFamily: DISPLAY }}>Bengaluru, IN</span></div>
-        <div>Focus<br /><span style={{ color: fg, fontSize: 13, textTransform: "none", letterSpacing: 0, fontFamily: DISPLAY }}>AI Systems · Backend</span></div>
-        <div>Studying<br /><span style={{ color: fg, fontSize: 13, textTransform: "none", letterSpacing: 0, fontFamily: DISPLAY }}>B.Tech CS (AI), MIT</span></div>
+        <div>Role<br /><span style={{ color: fg, fontSize: 12.5, textTransform: "none", letterSpacing: 0, fontFamily: DISPLAY, fontWeight: 400 }}>Builder Resident · Zeoxia</span></div>
+        <div>Based<br /><span style={{ color: fg, fontSize: 12.5, textTransform: "none", letterSpacing: 0, fontFamily: DISPLAY, fontWeight: 400 }}>Bengaluru, IN</span></div>
+        <div>Focus<br /><span style={{ color: fg, fontSize: 12.5, textTransform: "none", letterSpacing: 0, fontFamily: DISPLAY, fontWeight: 400 }}>AI Systems · Backend</span></div>
+        <div>Studying<br /><span style={{ color: fg, fontSize: 12.5, textTransform: "none", letterSpacing: 0, fontFamily: DISPLAY, fontWeight: 400 }}>B.Tech CS (AI), MIT</span></div>
+      </div>
+    </div>
+  )
+}
+
+// ── Tech stack slideshow ──
+interface StackItem {
+  name: string
+  slug: string
+  category: string
+  tag: string
+  count: string
+  blurb: string
+  accent: string
+}
+
+const STACK: StackItem[] = [
+  { name: "Python",        slug: "python/python-original",                                    category: "LANGUAGE",   tag: "Primary language",      count: "5+ projects",         blurb: "ML pipelines, FastAPI services, data work, research scripts, the default for almost everything.", accent: "#3776AB" },
+  { name: "FastAPI",       slug: "fastapi/fastapi-original",                                   category: "FRAMEWORK",  tag: "Async Python backend",  count: "4 projects",           blurb: "Microservices for Predictive Maintenance, QuantForge, ClaimRail, and IncidentEnv. Async-first, OpenAPI out of the box.", accent: "#009688" },
+  { name: "React",         slug: "react/react-original",                                       category: "FRAMEWORK",  tag: "UI library",             count: "Live dashboards",      blurb: "The Predictive Maintenance client and most product UIs. React 18 + Vite on Vercel.",              accent: "#61DAFB" },
+  { name: "TypeScript",    slug: "typescript/typescript-original",                             category: "LANGUAGE",   tag: "Typed JS",               count: "Web + mobile",         blurb: "Every frontend, plus the on-device MLP in FakeCallShield running in pure TS at ~20ms.",          accent: "#3178C6" },
+  { name: "PyTorch",       slug: "pytorch/pytorch-original",                                   category: "ML",         tag: "Deep learning",          count: "skam + hacks",         blurb: "LSTM autoencoders for telemetry anomaly detection and the Meta × HF OpenEnv hackathon work.",   accent: "#EE4C2C" },
+  { name: "scikit-learn",  slug: "scikitlearn/scikitlearn-original",                           category: "ML",         tag: "Classical ML",           count: "In production",        blurb: "Random Forest + Isolation Forest serving live predictions on the Predictive Maintenance API.",   accent: "#F7931E" },
+  { name: "Docker",        slug: "docker/docker-original",                                     category: "INFRA",      tag: "Containers",             count: "Every service",        blurb: "Reproducible builds from laptop to Render to k3d. Multi-stage images, slim runtimes.",           accent: "#2496ED" },
+  { name: "Kubernetes",    slug: "kubernetes/kubernetes-plain",                                category: "INFRA",      tag: "Orchestration",          count: "skam + QuantForge",    blurb: "Six Go microservices on k3d with pod-kill operators, HPA, and closed-loop recovery.",           accent: "#326CE5" },
+  { name: "PostgreSQL",    slug: "postgresql/postgresql-original",                             category: "DATABASE",   tag: "SQL · Relational",       count: "Analytics + apps",     blurb: "Transactional stores, JSONB payloads, DAX-fed Power BI pipelines, pgvector on Sentinel.",       accent: "#4169E1" },
+  { name: "Go",            slug: "go/go-original-wordmark",                                    category: "LANGUAGE",   tag: "Systems",                count: "µservice layer",       blurb: "Chaos-engineering microservices in skam and performance-critical paths in Sentinel.",           accent: "#00ADD8" },
+  { name: "AWS",           slug: "amazonwebservices/amazonwebservices-original-wordmark",      category: "CLOUD",      tag: "EC2 · Cognito",          count: "Auth + compute",       blurb: "OAuth via Cognito, compute on EC2, and the production plumbing for live projects.",             accent: "#FF9900" },
+  { name: "Tailwind CSS",  slug: "tailwindcss/tailwindcss-original",                           category: "STYLING",    tag: "Utility-first",          count: "Every UI",             blurb: "The styling layer across every web surface I ship, designed in tokens, not stylesheets.",      accent: "#38BDF8" },
+  { name: "Node.js",       slug: "nodejs/nodejs-original",                                     category: "RUNTIME",    tag: "Server JS",              count: "Tooling + APIs",       blurb: "Build tooling, MCP servers, and small backends where the JS ecosystem pays off.",              accent: "#339933" },
+  { name: "NumPy",         slug: "numpy/numpy-original",                                       category: "ML",         tag: "Array computing",        count: "QuantForge core",      blurb: "Vectorized math under the quant stack, options pricing, optimizers, risk analytics.",          accent: "#4D77CF" },
+  { name: "Git",           slug: "git/git-original",                                           category: "TOOLS",      tag: "Version control",        count: "Daily driver",         blurb: "Feature branches, worktrees, a lot of rebases. This portfolio lives in one.",                   accent: "#F05032" },
+]
+
+interface CineStackProps {
+  fg: string
+  muted: string
+  line: string
+  accent: string
+  cardBg: string
+  panelBg: string
+}
+
+function CineStackSlideshow({ fg, muted, line, accent, cardBg, panelBg }: CineStackProps) {
+  const [idx, setIdx] = useState(0)
+  const [playing, setPlaying] = useState(true)
+  const [progress, setProgress] = useState(0)
+  const DURATION = 3800
+  const rafRef = useRef<number | null>(null)
+  const lastRef = useRef<number>(0)
+  const stageRef = useRef<HTMLDivElement>(null)
+
+  const n = STACK.length
+  const cur = STACK[idx]
+
+  useEffect(() => {
+    const loop = (t: number) => {
+      if (!lastRef.current) lastRef.current = t
+      const dt = t - lastRef.current
+      lastRef.current = t
+      if (playing) {
+        setProgress((p) => {
+          const np = p + dt
+          if (np >= DURATION) {
+            setIdx((i) => (i + 1) % n)
+            return 0
+          }
+          return np
+        })
+      }
+      rafRef.current = requestAnimationFrame(loop)
+    }
+    rafRef.current = requestAnimationFrame(loop)
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      lastRef.current = 0
+    }
+  }, [playing, n])
+
+  const goTo = (i: number) => {
+    setIdx(((i % n) + n) % n)
+    setProgress(0)
+  }
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const el = stageRef.current
+      if (!el) return
+      const r = el.getBoundingClientRect()
+      if (r.bottom < 0 || r.top > window.innerHeight) return
+      if ((document.activeElement as HTMLElement)?.tagName === "INPUT") return
+      if (e.key === "ArrowLeft") goTo(idx - 1)
+      if (e.key === "ArrowRight") goTo(idx + 1)
+      if (e.key === " ") { e.preventDefault(); setPlaying((p) => !p) }
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [idx, n])
+
+  return (
+    <div
+      ref={stageRef}
+      onMouseEnter={() => setPlaying(false)}
+      onMouseLeave={() => setPlaying(true)}
+      style={{
+        position: "relative",
+        border: `1px solid ${line}`,
+        borderRadius: 12,
+        background: panelBg,
+        overflow: "hidden",
+        marginTop: 60,
+        maxWidth: 1440,
+      }}
+    >
+      {/* Stage */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "200px 1fr",
+        gap: 48,
+        alignItems: "center",
+        padding: "32px 48px 28px",
+      }}>
+        {/* Logo column */}
+        <div style={{ position: "relative", aspectRatio: "1 / 1", width: 200 }}>
+          <div style={{
+            position: "absolute", inset: "14%",
+            borderRadius: "50%",
+            filter: "blur(50px)",
+            opacity: 0.4,
+            background: cur.accent,
+            transition: "background-color .8s ease",
+            zIndex: 0,
+          }} />
+          {STACK.map((s, i) => (
+            <img
+              key={s.slug}
+              src={`https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${s.slug}.svg`}
+              alt={`${s.name} logo`}
+              loading={i === 0 ? "eager" : "lazy"}
+              decoding="async"
+              width={140}
+              height={140}
+              style={{
+                position: "absolute",
+                inset: 0,
+                margin: "auto",
+                width: "62%",
+                height: "62%",
+                objectFit: "contain",
+                opacity: i === idx ? 1 : 0,
+                transform: i === idx ? "scale(1) rotate(0deg)" : "scale(.88) rotate(-4deg)",
+                transition: "opacity .55s ease, transform .6s cubic-bezier(.2,.9,.3,1)",
+                filter: "drop-shadow(0 8px 22px rgba(0,0,0,0.55))",
+                zIndex: 1,
+                pointerEvents: "none",
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Meta column */}
+        <div style={{ minWidth: 0 }}>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 10,
+            fontFamily: MONO, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.2em",
+            marginBottom: 14,
+          }}>
+            <span style={{ color: accent }}>
+              {String(idx + 1).padStart(2, "0")} / {String(n).padStart(2, "0")}
+            </span>
+            <span style={{
+              padding: "2px 10px",
+              background: `${accent}1a`,
+              border: `1px solid ${accent}44`,
+              color: accent,
+              borderRadius: 999,
+              fontSize: 10,
+            }}>
+              {cur.category}
+            </span>
+          </div>
+
+          <div style={{
+            display: "flex", alignItems: "baseline", gap: 20, flexWrap: "wrap",
+            marginBottom: 8,
+          }}>
+            <h3 style={{
+              fontFamily: DISPLAY,
+              fontSize: "clamp(32px, 4vw, 52px)",
+              fontWeight: 400,
+              letterSpacing: "-0.03em",
+              lineHeight: 1.02,
+              margin: 0,
+              color: fg,
+            }}>
+              {cur.name}
+            </h3>
+            <span style={{
+              fontFamily: MONO, fontSize: 12, color: muted,
+              textTransform: "uppercase", letterSpacing: "0.14em",
+            }}>
+              · {cur.tag}
+            </span>
+          </div>
+
+          <p style={{
+            fontSize: 15, lineHeight: 1.6, color: muted,
+            maxWidth: "min(780px, 100%)", margin: "8px 0 18px",
+          }}>
+            {cur.blurb}
+          </p>
+
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 10,
+            padding: "8px 14px",
+            background: cardBg,
+            border: `1px solid ${line}`,
+            borderRadius: 999,
+            fontFamily: MONO, fontSize: 11, color: muted,
+            textTransform: "uppercase", letterSpacing: "0.12em",
+          }}>
+            <span style={{
+              width: 8, height: 8, borderRadius: "50%",
+              background: cur.accent,
+              boxShadow: `0 0 10px ${cur.accent}`,
+            }} />
+            {cur.count}
+          </div>
+
+          {/* Controls */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 20 }}>
+            <button
+              onClick={() => goTo(idx - 1)}
+              aria-label="Previous tech"
+              style={{
+                width: 42, height: 42, display: "grid", placeItems: "center",
+                background: cardBg, border: `1px solid ${line}`, borderRadius: 8,
+                color: muted, cursor: "pointer", transition: "all .2s",
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = accent; (e.currentTarget as HTMLButtonElement).style.borderColor = accent }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = muted; (e.currentTarget as HTMLButtonElement).style.borderColor = line }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+            </button>
+            <button
+              onClick={() => setPlaying((p) => !p)}
+              aria-label={playing ? "Pause slideshow" : "Play slideshow"}
+              style={{
+                width: 42, height: 42, display: "grid", placeItems: "center",
+                background: cardBg, border: `1px solid ${line}`, borderRadius: 8,
+                color: muted, cursor: "pointer", transition: "all .2s",
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = accent; (e.currentTarget as HTMLButtonElement).style.borderColor = accent }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = muted; (e.currentTarget as HTMLButtonElement).style.borderColor = line }}
+            >
+              {playing ? (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1" /><rect x="14" y="4" width="4" height="16" rx="1" /></svg>
+              ) : (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+              )}
+            </button>
+            <button
+              onClick={() => goTo(idx + 1)}
+              aria-label="Next tech"
+              style={{
+                width: 42, height: 42, display: "grid", placeItems: "center",
+                background: cardBg, border: `1px solid ${line}`, borderRadius: 8,
+                color: muted, cursor: "pointer", transition: "all .2s",
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = accent; (e.currentTarget as HTMLButtonElement).style.borderColor = accent }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = muted; (e.currentTarget as HTMLButtonElement).style.borderColor = line }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Dots */}
+      <div style={{
+        display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 6,
+        padding: "6px 24px 24px",
+      }}>
+        {STACK.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i)}
+            aria-label={`Go to slide ${i + 1}`}
+            style={{
+              width: i === idx ? 36 : 22,
+              height: 4,
+              borderRadius: 2,
+              background: i === idx ? accent : "rgba(255,255,255,0.12)",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+              transition: "all .3s cubic-bezier(.2,.7,.2,1)",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Progress */}
+      <div style={{
+        position: "absolute", left: 0, right: 0, bottom: 0,
+        height: 2, background: "rgba(255,255,255,0.04)",
+      }}>
+        <div style={{
+          height: "100%",
+          width: `${Math.min(100, (progress / DURATION) * 100)}%`,
+          background: `linear-gradient(90deg, ${accent}, ${cur.accent})`,
+          transition: "width .08s linear",
+        }} />
       </div>
     </div>
   )
@@ -311,6 +638,7 @@ function Calendar({ fg, muted, line, accent, cardBg, email }: CalendarProps) {
   const [type, setType] = useState<BookingType>("intro")
   const [confirmed, setConfirmed] = useState(false)
   const [name, setName] = useState("")
+  const [visitorEmail, setVisitorEmail] = useState("")
   const [what, setWhat] = useState("")
 
   const monthName = new Date(view.y, view.m, 1).toLocaleString("en-US", { month: "long", year: "numeric" })
@@ -357,7 +685,34 @@ function Calendar({ fg, muted, line, accent, cardBg, email }: CalendarProps) {
       })
     : null
 
-  const canConfirm = Boolean(selected && time && name.trim() && what.trim())
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(visitorEmail.trim())
+  const canConfirm = Boolean(selected && time && name.trim() && what.trim() && emailValid)
+
+  /**
+   * Build a Google Calendar add-event URL. When the visitor saves it,
+   * Kshitij is added as a guest and Google emails him a calendar invite.
+   * IST → UTC: subtract 5h30m (330 min).
+   */
+  const buildGoogleCalendarUrl = (): string => {
+    if (!selected || !time) return "#"
+    const [hh, mm] = time.split(":").map(Number)
+    const startUtc = new Date(Date.UTC(selected.y, selected.m, selected.d, hh, mm))
+    startUtc.setUTCMinutes(startUtc.getUTCMinutes() - 330) // IST → UTC
+    const endUtc = new Date(startUtc.getTime() + selectedType.min * 60_000)
+    const fmt = (d: Date) => {
+      const p = (n: number) => String(n).padStart(2, "0")
+      return `${d.getUTCFullYear()}${p(d.getUTCMonth() + 1)}${p(d.getUTCDate())}T${p(d.getUTCHours())}${p(d.getUTCMinutes())}00Z`
+    }
+    const params = new URLSearchParams({
+      action: "TEMPLATE",
+      text: `Kshitij × ${name.split(" ")[0] || "Guest"}, ${selectedType.label}`,
+      dates: `${fmt(startUtc)}/${fmt(endUtc)}`,
+      details: `Booked via portfolio.\n\nGuest: ${name} <${visitorEmail}>\nTopic: ${what}\n\nA reply with the meeting link will follow.`,
+      add: `${email},${visitorEmail}`,
+      location: "Online (link to follow)",
+    })
+    return `https://calendar.google.com/calendar/render?${params.toString()}`
+  }
 
   if (confirmed) {
     return (
@@ -387,11 +742,11 @@ function Calendar({ fg, muted, line, accent, cardBg, email }: CalendarProps) {
             </span>
           </h3>
           <div style={{ fontSize: 14, color: muted, lineHeight: 1.7, marginBottom: 24 }}>
-            An invite is on the way to your inbox.<br />
+            Save the Google Calendar event in the new tab, I&apos;ll get the invite by email and reply with a meeting link.<br />
             <span style={{ color: fg, fontFamily: MONO, fontSize: 13 }}>{selectedDay} · {time} IST · {selectedType.min} min</span>
           </div>
           <button
-            onClick={() => { setConfirmed(false); setSelected(null); setTime(null); setName(""); setWhat(""); }}
+            onClick={() => { setConfirmed(false); setSelected(null); setTime(null); setName(""); setVisitorEmail(""); setWhat(""); }}
             style={{
               padding: "10px 18px", background: "transparent",
               border: `1px solid ${line}`, color: muted,
@@ -567,10 +922,14 @@ function Calendar({ fg, muted, line, accent, cardBg, email }: CalendarProps) {
               }}
             />
             <input
+              type="email"
+              value={visitorEmail}
+              onChange={(e) => setVisitorEmail(e.target.value)}
               placeholder="Your email"
               style={{
                 padding: "12px 14px", background: "rgba(255,255,255,0.03)",
-                border: `1px solid ${line}`, color: fg, fontFamily: DISPLAY, fontSize: 14,
+                border: `1px solid ${visitorEmail && !emailValid ? "#ef4444" : line}`,
+                color: fg, fontFamily: DISPLAY, fontSize: 14,
                 borderRadius: 6, outline: "none",
               }}
             />
@@ -596,10 +955,8 @@ function Calendar({ fg, muted, line, accent, cardBg, email }: CalendarProps) {
               disabled={!canConfirm}
               onClick={() => {
                 if (!canConfirm) return
-                // Fire mailto as a real-world fallback; keep the nice confirmation UI.
-                const subject = encodeURIComponent(`Booking: ${selectedType.label} — ${selectedDay} ${time} IST`)
-                const body = encodeURIComponent(`Hi Kshitij,\n\nI'd like to book a ${selectedType.label} (${selectedType.min} min) on ${selectedDay} at ${time} IST.\n\nName: ${name}\nTopic: ${what}\n`)
-                window.open(`mailto:${email}?subject=${subject}&body=${body}`, "_blank")
+                // Open Google Calendar prefilled, saving it sends Kshitij a calendar invite by email.
+                window.open(buildGoogleCalendarUrl(), "_blank", "noopener, noreferrer")
                 setConfirmed(true)
               }}
               style={{
@@ -623,9 +980,9 @@ function Calendar({ fg, muted, line, accent, cardBg, email }: CalendarProps) {
 
 // ── Main cinematic component ──
 export default function Cinematic() {
-  const accent = "#d97757"
+  const accent = "#22d3ee"
 
-  // Color scheme — dark with translucent surfaces so Astro StarField shows through.
+  // Color scheme, dark with translucent surfaces so Astro StarField shows through.
   const fg = "#f4f1ec"
   const muted = "#9a979b"
   const line = "rgba(244,241,236,0.12)"
@@ -637,7 +994,7 @@ export default function Cinematic() {
   const kinds = useMemo<string[]>(() => ["all", ...Array.from(new Set(PORTFOLIO.projects.map((p) => p.kind)))], [])
   const filtered = filter === "all" ? PORTFOLIO.projects : PORTFOLIO.projects.filter((p) => p.kind === filter)
 
-  const navItems = ["Home", "Work", "About", "Projects", "Contact"]
+  const navItems = ["Home", "About", "Work", "Projects", "Stack", "Contact"]
   const [activeSection, setActiveSection] = useState("home")
   const [scrollY, setScrollY] = useState(0)
 
@@ -689,7 +1046,7 @@ export default function Cinematic() {
       <nav style={{
         position: "sticky", top: 0, zIndex: 20,
         display: "grid", gridTemplateColumns: "1fr auto 1fr",
-        alignItems: "center", padding: "20px 40px",
+        alignItems: "center", padding: "18px 56px",
         background: "rgba(10,10,11,0.72)",
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
@@ -745,20 +1102,54 @@ export default function Cinematic() {
       </div>
 
       {/* HERO */}
-      <section id="home" style={{ position: "relative", padding: "120px 40px 100px", borderBottom: `1px solid ${line}`, overflow: "hidden", minHeight: "88vh", display: "flex", alignItems: "center" }}>
+      <section id="home" style={{ position: "relative", padding: "120px 56px 100px", borderBottom: `1px solid ${line}`, overflow: "hidden", minHeight: "92vh", display: "flex", alignItems: "center" }}>
+        {/* Ambient glow behind robot for cohesion */}
+        <div aria-hidden style={{
+          position: "absolute",
+          top: "40%", right: "-6%",
+          width: "55%", height: "75%",
+          transform: "translateY(-50%)",
+          background: `radial-gradient(ellipse at center, ${accent}1f 0%, transparent 65%)`,
+          pointerEvents: "none",
+          zIndex: 0,
+          filter: "blur(8px)",
+        }} />
+
+        {/* Robot, desktop only, right half of screen, parallax + fade on scroll */}
+        <div className="cine-hero-robot" style={{
+          position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1,
+          opacity: Math.max(0, 1 - scrollY / 900),
+          transform: `translateY(${scrollY * 0.06}px)`,
+          transition: "opacity .25s",
+        }}>
+          <div style={{
+            position: "absolute", top: 0, right: 0, width: "62%", height: "100%",
+            pointerEvents: "auto",
+            // Radial mask: robot fades on all edges into page background for seamless blend
+            WebkitMaskImage: "radial-gradient(ellipse 68% 82% at 62% 50%, #000 32%, rgba(0,0,0,.9) 52%, rgba(0,0,0,.4) 75%, transparent 100%)",
+            maskImage: "radial-gradient(ellipse 68% 82% at 62% 50%, #000 32%, rgba(0,0,0,.9) 52%, rgba(0,0,0,.4) 75%, transparent 100%)",
+          }}>
+            <Suspense fallback={null}>
+              <Spline scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" style={{ width: "100%", height: "100%", background: "transparent" }} />
+            </Suspense>
+          </div>
+        </div>
+
         <div style={{
           width: "100%",
-          transform: `translateY(${scrollY * 0.18}px)`,
-          opacity: Math.max(0, 1 - scrollY / 700),
+          transform: `translateY(${scrollY * 0.12}px)`,
+          opacity: Math.max(0, 1 - scrollY / 750),
           transition: "opacity .2s",
+          position: "relative", zIndex: 2,
+          maxWidth: "min(720px, 52%)",
         }}>
           <CineHeroStack accent={accent} muted={muted} fg={fg} />
         </div>
         <div style={{
-          position: "absolute", bottom: 30, left: "50%", transform: "translateX(-50%)",
+          position: "absolute", bottom: 32, left: "50%", transform: "translateX(-50%)",
           fontFamily: MONO, fontSize: 10, color: muted, textTransform: "uppercase", letterSpacing: "0.3em",
           display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
-          opacity: Math.max(0, 1 - scrollY / 200),
+          opacity: Math.max(0, 1 - scrollY / 200), zIndex: 3,
         }}>
           <div>Scroll</div>
           <div style={{ width: 1, height: 32, background: `linear-gradient(to bottom, ${muted}, transparent)`, animation: "cine-pulse 2s ease-in-out infinite" }} />
@@ -766,11 +1157,11 @@ export default function Cinematic() {
       </section>
 
       {/* Marquee */}
-      <section style={{ borderBottom: `1px solid ${line}`, overflow: "hidden", padding: "22px 0", position: "relative", background: panelBg }}>
+      <section style={{ borderBottom: `1px solid ${line}`, overflow: "hidden", padding: "18px 0", position: "relative", background: panelBg }}>
         <div style={{
           display: "flex", gap: 40, whiteSpace: "nowrap",
-          animation: "cine-marquee 50s linear infinite",
-          fontFamily: DISPLAY, fontSize: 32, fontWeight: 400, letterSpacing: "-0.02em",
+          animation: "cine-marquee 60s linear infinite",
+          fontFamily: DISPLAY, fontSize: 26, fontWeight: 400, letterSpacing: "-0.02em",
           color: muted,
         }}>
           {Array.from({ length: 3 }).flatMap((_, k) =>
@@ -783,9 +1174,49 @@ export default function Cinematic() {
         </div>
       </section>
 
+      {/* ABOUT */}
+      <section id="about" style={{ padding: "100px 56px", borderBottom: `1px solid ${line}`, position: "relative", background: panelBg }}>
+        <Reveal variant="slide-left"><SectionKicker n="01" label="About" sub="The short version" accent={accent} muted={muted} /></Reveal>
+        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 80, marginTop: 60, maxWidth: 1200 }}>
+          <Reveal delay={0.1}>
+            <h3 style={{
+              fontSize: "clamp(28px, 3.8vw, 52px)", fontWeight: 400,
+              lineHeight: 1.25, letterSpacing: "-0.02em", margin: "0 0 28px",
+            }}>
+              I care about systems that stay <span style={{ color: accent, fontStyle: "italic", fontFamily: SERIF }}>scalable and legible</span>, backends, ML pipelines, developer tools.
+            </h3>
+            <p style={{ fontSize: 17, lineHeight: 1.75, color: muted, margin: "0 0 16px", maxWidth: 620 }}>
+              Computer Science (AI) undergrad at Manipal Institute of Technology, currently a Builder Resident at Zeoxia working on early-stage R&D across AI systems and edge computing.
+            </p>
+            <p style={{ fontSize: 17, lineHeight: 1.75, color: muted, margin: "0 0 16px", maxWidth: 620 }}>
+              I write production-quality code in Python, C++ and JavaScript, FastAPI + React, deployed on AWS. Strong fundamentals in DSA, OOP, DBMS and system design.
+            </p>
+            <p style={{ fontSize: 17, lineHeight: 1.75, color: muted, margin: 0, maxWidth: 620 }}>
+              Outside classes: building ML tools, shipping prototypes.
+            </p>
+          </Reveal>
+          <Stagger>
+            <div style={{ fontFamily: MONO, fontSize: 11, color: muted, textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 20 }}>
+              Currently
+            </div>
+            {PORTFOLIO.now.slice(0, 4).map((n, i) => (
+              <div key={i} style={{
+                padding: "16px 0",
+                borderTop: `1px solid ${line}`,
+                fontSize: 16, lineHeight: 1.5,
+                display: "grid", gridTemplateColumns: "24px 1fr", gap: 12,
+              }}>
+                <span style={{ color: accent, fontFamily: MONO, fontSize: 11, paddingTop: 3 }}>→</span>
+                <span>{n}</span>
+              </div>
+            ))}
+          </Stagger>
+        </div>
+      </section>
+
       {/* WORK */}
-      <section id="work" style={{ padding: "120px 40px", borderBottom: `1px solid ${line}`, position: "relative" }}>
-        <Reveal variant="slide-left"><SectionKicker n="01" label="Work" sub="R&D residency + CS @ Manipal Institute of Technology" accent={accent} muted={muted} /></Reveal>
+      <section id="work" style={{ padding: "100px 56px", borderBottom: `1px solid ${line}`, position: "relative" }}>
+        <Reveal variant="slide-left"><SectionKicker n="02" label="Work & Education" sub="R&D residency + CS @ Manipal Institute of Technology" accent={accent} muted={muted} /></Reveal>
         <Stagger style={{ marginTop: 60, maxWidth: 1100 }}>
           {PORTFOLIO.experience.map((e, i) => (
             <div key={i} style={{
@@ -826,48 +1257,8 @@ export default function Cinematic() {
         </Reveal>
       </section>
 
-      {/* ABOUT */}
-      <section id="about" style={{ padding: "120px 40px", borderBottom: `1px solid ${line}`, position: "relative", background: panelBg }}>
-        <Reveal variant="slide-left"><SectionKicker n="02" label="About" sub="The short version" accent={accent} muted={muted} /></Reveal>
-        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 80, marginTop: 60, maxWidth: 1200 }}>
-          <Reveal delay={0.1}>
-            <h3 style={{
-              fontSize: "clamp(28px, 3.8vw, 52px)", fontWeight: 400,
-              lineHeight: 1.25, letterSpacing: "-0.02em", margin: "0 0 28px",
-            }}>
-              I care about systems that stay <span style={{ color: accent, fontStyle: "italic", fontFamily: SERIF }}>scalable and legible</span> — backends, ML pipelines, developer tools.
-            </h3>
-            <p style={{ fontSize: 17, lineHeight: 1.75, color: muted, margin: "0 0 16px", maxWidth: 620 }}>
-              Computer Science (AI) undergrad at Manipal Institute of Technology, currently a Builder Resident at Zeoxia working on early-stage R&D across AI systems and edge computing.
-            </p>
-            <p style={{ fontSize: 17, lineHeight: 1.75, color: muted, margin: "0 0 16px", maxWidth: 620 }}>
-              I write production-quality code in Python, C++ and JavaScript — FastAPI + React, deployed on AWS. Strong fundamentals in DSA, OOP, DBMS and system design.
-            </p>
-            <p style={{ fontSize: 17, lineHeight: 1.75, color: muted, margin: 0, maxWidth: 620 }}>
-              Outside classes: building ML tools, shipping prototypes.
-            </p>
-          </Reveal>
-          <Stagger>
-            <div style={{ fontFamily: MONO, fontSize: 11, color: muted, textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 20 }}>
-              Currently
-            </div>
-            {PORTFOLIO.now.slice(0, 4).map((n, i) => (
-              <div key={i} style={{
-                padding: "16px 0",
-                borderTop: `1px solid ${line}`,
-                fontSize: 16, lineHeight: 1.5,
-                display: "grid", gridTemplateColumns: "24px 1fr", gap: 12,
-              }}>
-                <span style={{ color: accent, fontFamily: MONO, fontSize: 11, paddingTop: 3 }}>→</span>
-                <span>{n}</span>
-              </div>
-            ))}
-          </Stagger>
-        </div>
-      </section>
-
       {/* PROJECTS */}
-      <section id="projects" style={{ padding: "120px 40px", borderBottom: `1px solid ${line}`, position: "relative" }}>
+      <section id="projects" style={{ padding: "100px 56px", borderBottom: `1px solid ${line}`, position: "relative", background: panelBg }}>
         <Reveal variant="slide-left"><SectionKicker n="03" label="Projects" sub="Selected case studies" accent={accent} muted={muted} /></Reveal>
 
         <Reveal delay={0.1} style={{ display: "flex", gap: 10, margin: "40px 0 56px", fontFamily: MONO, fontSize: 11, flexWrap: "wrap" }}>
@@ -897,91 +1288,163 @@ export default function Cinematic() {
         </Stagger>
       </section>
 
+      {/* STACK */}
+      <section id="stack" style={{ padding: "100px 56px", borderBottom: `1px solid ${line}`, position: "relative" }}>
+        <Reveal variant="slide-left"><SectionKicker n="04" label="Stack" sub="Top 15 tools I reach for, in rotation" accent={accent} muted={muted} /></Reveal>
+        <Reveal delay={0.1}>
+          <CineStackSlideshow fg={fg} muted={muted} line={line} accent={accent} cardBg={cardBg} panelBg={panelBg} />
+        </Reveal>
+      </section>
+
       {/* CONTACT */}
-      <section id="contact" style={{ padding: "140px 40px 120px", position: "relative", overflow: "hidden" }}>
+      <section id="contact" style={{ padding: "100px 56px 80px", position: "relative", overflow: "hidden" }}>
         <div style={{
           position: "absolute", inset: 0,
-          background: `radial-gradient(800px 500px at 50% 30%, ${accent}1a 0%, transparent 70%)`,
+          background: `radial-gradient(900px 500px at 50% 30%, ${accent}10 0%, transparent 65%)`,
           pointerEvents: "none",
+          zIndex: 0,
         }} />
 
-        <div style={{ position: "relative", maxWidth: 1200, margin: "0 auto" }}>
-          <Reveal variant="slide-left"><SectionKicker n="04" label="Contact" sub="Let's find a time" accent={accent} muted={muted} /></Reveal>
+        <div style={{ position: "relative", maxWidth: 1440, zIndex: 1 }}>
+          <Reveal variant="slide-left"><SectionKicker n="05" label="Contact" sub="Let's find a time" accent={accent} muted={muted} /></Reveal>
 
-          <Reveal delay={0.1}>
-            <h2 style={{
-              fontSize: "clamp(44px, 7vw, 110px)",
-              fontWeight: 400, letterSpacing: "-0.035em",
-              lineHeight: 0.96, margin: "40px 0 60px", maxWidth: 1000,
+          {/* Available pill */}
+          <Reveal delay={0.08}>
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 10,
+              padding: "6px 14px",
+              background: `${accent}12`,
+              border: `1px solid ${accent}44`,
+              borderRadius: 999,
+              fontFamily: MONO, fontSize: 10.5, color: accent,
+              textTransform: "uppercase", letterSpacing: "0.16em",
+              marginTop: 24,
             }}>
-              Got something <span style={{
-                fontFamily: SERIF, fontStyle: "italic", fontWeight: 400,
-                background: `linear-gradient(90deg, ${fg}, ${accent})`,
-                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}>worth building?</span>
-            </h2>
+              <span style={{
+                width: 7, height: 7, borderRadius: "50%",
+                background: accent, boxShadow: `0 0 10px ${accent}`,
+                animation: "cine-pulse 2s ease-in-out infinite",
+              }} />
+              Available for 2026 roles
+            </div>
           </Reveal>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1.3fr", gap: 48, alignItems: "start" }}>
-            <Reveal delay={0.15}>
-              <div style={{ fontFamily: MONO, fontSize: 11, color: muted, textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 20 }}>
-                Reach me directly
-              </div>
-              <a
-                href={`mailto:${PORTFOLIO.email}`}
-                style={{
-                  display: "inline-block", padding: "16px 24px",
-                  border: `1px solid ${accent}`, color: fg,
-                  background: `${accent}12`,
-                  textDecoration: "none", fontFamily: MONO, fontSize: 13,
-                  letterSpacing: "0.08em", textTransform: "uppercase",
-                  borderRadius: 999, transition: "all .2s",
-                  marginBottom: 28,
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = accent; e.currentTarget.style.color = "#0a0a0b" }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = `${accent}12`; e.currentTarget.style.color = fg }}
-              >
-                {PORTFOLIO.email} →
-              </a>
+          {/* Row 1: Headline on left, Reach-me on right */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "minmax(0, 1.25fr) minmax(0, 1fr)",
+            gap: 48,
+            alignItems: "center",
+            marginTop: 28,
+            marginBottom: 56,
+          }}>
+            <Reveal delay={0.12}>
+              <h2 style={{
+                fontSize: "clamp(34px, 4.8vw, 64px)",
+                fontWeight: 500, letterSpacing: "-0.03em",
+                lineHeight: 1, margin: "0 0 16px", maxWidth: 680,
+              }}>
+                Got something <span style={{
+                  fontFamily: SERIF, fontStyle: "italic", fontWeight: 400, color: accent,
+                }}>worth building?</span>
+              </h2>
+              <p style={{
+                fontSize: 15, lineHeight: 1.6, color: muted,
+                maxWidth: 520, margin: 0,
+              }}>
+                Internships, SWE roles, or deep-tech R&D, I&apos;m listening. Drop a line or pick a time that works.
+              </p>
+            </Reveal>
 
-              <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 0 }}>
-                {PORTFOLIO.social.map((s, i) => (
-                  <a
-                    key={s.label}
-                    href={s.href}
-                    target={s.href.startsWith("http") ? "_blank" : undefined}
-                    rel={s.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                    style={{
-                      padding: "14px 0",
-                      borderTop: i === 0 ? `1px solid ${line}` : "none",
-                      borderBottom: `1px solid ${line}`,
-                      display: "grid", gridTemplateColumns: "90px 1fr auto", gap: 16, alignItems: "center",
-                      color: fg, textDecoration: "none",
-                      transition: "padding .15s, color .15s",
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.paddingLeft = "8px"; e.currentTarget.style.color = accent }}
-                    onMouseLeave={(e) => { e.currentTarget.style.paddingLeft = "0"; e.currentTarget.style.color = fg }}
-                  >
-                    <span style={{ fontFamily: MONO, fontSize: 11, color: muted, textTransform: "uppercase", letterSpacing: "0.1em" }}>{s.label}</span>
-                    <span style={{ fontFamily: MONO, fontSize: 13 }}>{s.url}</span>
-                    <span style={{ color: muted }}>↗</span>
-                  </a>
-                ))}
-              </div>
-
-              <div style={{ marginTop: 32, padding: 20, border: `1px dashed ${line}`, borderRadius: 6 }}>
-                <div style={{ fontFamily: MONO, fontSize: 10, color: accent, textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 6 }}>
-                  ● Currently available
+            {/* Reach me directly, right of headline */}
+            <Reveal delay={0.18} variant="scale-up">
+              <div style={{
+                border: `1px solid ${line}`, borderRadius: 12,
+                background: cardBg, padding: 20,
+              }}>
+                <div style={{ fontFamily: MONO, fontSize: 10.5, color: muted, textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 12 }}>
+                  Reach me directly
                 </div>
-                <div style={{ fontSize: 14, color: muted, lineHeight: 1.55 }}>
-                  Open to internships, SWE roles, and deep-tech R&D opportunities for 2026.
+                <a
+                  href={`mailto:${PORTFOLIO.email}`}
+                  style={{
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    padding: "10px 14px",
+                    border: `1px solid ${accent}`, color: fg,
+                    background: `${accent}10`,
+                    textDecoration: "none", fontFamily: MONO, fontSize: 12,
+                    letterSpacing: "0.04em",
+                    borderRadius: 6, transition: "all .2s",
+                    marginBottom: 12,
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = accent; e.currentTarget.style.color = "#0a0a0b" }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = `${accent}10`; e.currentTarget.style.color = fg }}
+                >
+                  <span>{PORTFOLIO.email}</span>
+                  <span style={{ fontSize: 13 }}>→</span>
+                </a>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  {PORTFOLIO.social.map((s, i) => (
+                    <a
+                      key={s.label}
+                      href={s.href}
+                      target={s.href.startsWith("http") ? "_blank" : undefined}
+                      rel={s.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                      style={{
+                        padding: "9px 0",
+                        borderTop: `1px solid ${line}`,
+                        display: "grid", gridTemplateColumns: "70px 1fr auto", gap: 10, alignItems: "center",
+                        color: fg, textDecoration: "none",
+                        transition: "padding-left .2s, color .2s",
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.paddingLeft = "6px"; e.currentTarget.style.color = accent }}
+                      onMouseLeave={(e) => { e.currentTarget.style.paddingLeft = "0"; e.currentTarget.style.color = fg }}
+                    >
+                      <span style={{ fontFamily: MONO, fontSize: 10, color: muted, textTransform: "uppercase", letterSpacing: "0.12em" }}>{s.label}</span>
+                      <span style={{ fontFamily: MONO, fontSize: 11.5 }}>{s.url}</span>
+                      <span style={{ color: muted, fontSize: 11 }}>↗</span>
+                    </a>
+                  ))}
                 </div>
               </div>
             </Reveal>
+          </div>
 
-            <Reveal variant="scale-up" delay={0.25}>
+          {/* Row 2: Calendar on left, Earth (transparent) on right, matched heights */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "minmax(0, 1.15fr) minmax(0, 1fr)",
+            gap: 48,
+            alignItems: "stretch",
+          }}>
+            <Reveal variant="scale-up" delay={0.22}>
               <Calendar fg={fg} muted={muted} line={line} accent={accent} cardBg={cardBg} email={PORTFOLIO.email} />
+            </Reveal>
+
+            {/* Transparent earth, no card, drops onto page bg */}
+            <Reveal delay={0.28} variant="scale-up">
+              <div style={{
+                position: "relative",
+                width: "100%",
+                height: "100%",
+                minHeight: 420,
+                display: "grid",
+                placeItems: "center",
+                background: "transparent",
+              }}>
+                <div style={{
+                  position: "absolute", inset: "6%",
+                  background: `radial-gradient(circle at 50% 50%, ${accent}1a 0%, transparent 65%)`,
+                  filter: "blur(24px)",
+                  pointerEvents: "none",
+                  zIndex: 0,
+                }} />
+                <div style={{ position: "relative", width: "100%", maxWidth: 520, zIndex: 1 }}>
+                  <Suspense fallback={null}>
+                    <RotatingEarth width={520} height={520} />
+                  </Suspense>
+                </div>
+              </div>
             </Reveal>
           </div>
         </div>
@@ -990,7 +1453,7 @@ export default function Cinematic() {
       {/* Footer */}
       <footer style={{
         borderTop: `1px solid ${line}`,
-        padding: "24px 40px",
+        padding: "24px 56px",
         display: "grid", gridTemplateColumns: "1fr 1fr 1fr",
         fontFamily: MONO, fontSize: 11, color: muted, textTransform: "uppercase", letterSpacing: "0.12em",
         position: "relative",

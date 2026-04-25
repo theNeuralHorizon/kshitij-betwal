@@ -1,5 +1,5 @@
 ---
-// Clean star field — white/blue stars, occasional shooting star. No colored particles.
+// Clean star field, white/blue stars, occasional shooting star. No colored particles.
 ---
 
 <canvas id="starfield" class="fixed inset-0 w-full h-full pointer-events-none" style="z-index: -10; opacity: 0.5;"></canvas>
@@ -31,7 +31,7 @@
 
   function init() {
     stars.length = 0;
-    // Fewer stars on mobile — saves paint time
+    // Fewer stars on mobile, saves paint time
     const maxStars = isMobile ? 70 : 150;
     const density = isMobile ? 12000 : 8000;
     const count = Math.min(maxStars, Math.floor((w * h) / density));
@@ -138,7 +138,7 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   resize(); init();
   if (!reduced) {
-    // Only track mouse on desktop — skip on touch devices
+    // Only track mouse on desktop, skip on touch devices
     if (isDesktop) {
       addEventListener('mousemove', (e) => { mx = e.clientX; my = e.clientY; }, { passive: true });
     }
@@ -152,7 +152,7 @@
     resizeTimer = window.setTimeout(() => { resize(); init(); }, 150);
   });
 
-  // Pause animation when tab is hidden — zero CPU/GPU in background
+  // Pause animation when tab is hidden, zero CPU/GPU in background
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       running = false;

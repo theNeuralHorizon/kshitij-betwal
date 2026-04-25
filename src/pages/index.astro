@@ -6,12 +6,3 @@ import Cinematic from '../components/cinematic/Cinematic';
 <Layout>
   <Cinematic client:load />
 </Layout>
-
-<style is:global>
-  /* Extra font loads for the cinematic design — serif italic + mono */
-  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&family=Inter+Tight:wght@300;400;500;600;700;800&display=swap');
-
-  /* Neutralize the grid-overlay so the cinematic design owns the canvas */
-  body { background: #0a0a0b !important; }
-  body.grid-overlay { background-image: none !important; }
-</style>

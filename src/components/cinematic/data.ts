@@ -1,4 +1,4 @@
-// Portfolio data — typed.
+// Portfolio data, typed.
 
 export interface SocialLink {
   label: string;
@@ -57,7 +57,7 @@ export const PORTFOLIO: Portfolio = {
   role: "Software Engineer · Builder",
   location: "Bengaluru, India",
   tagline:
-    "Building scalable backend/frontend systems — Python, C++, JavaScript, with a soft spot for ML and infra.",
+    "Building scalable backend/frontend systems, Python, C++, JavaScript, with a soft spot for ML and infra.",
   email: "kshitij.betwal@gmail.com",
   phone: "+91 9558412620",
   social: [
@@ -89,8 +89,8 @@ export const PORTFOLIO: Portfolio = {
       kind: "Platform · SRE",
       tags: ["Kubernetes", "k3d", "Go", "Python", "PyTorch", "Prometheus", "Grafana"],
       blurb:
-        "Autonomous chaos-engineering & self-healing platform. Deploys 6 Go microservices on k3d, programmatically injects failures (pod kill, memory pressure, network partition, latency, cache loss), detects anomalies via Isolation Forest + LSTM autoencoder on live Prometheus telemetry, and recovers through the K8s API — closed loop, zero human intervention.",
-      role: "Solo · Platform",
+        "Autonomous chaos-engineering & self-healing platform. Deploys 6 Go microservices on k3d, programmatically injects failures (pod kill, memory pressure, network partition, latency, cache loss), detects anomalies via Isolation Forest + LSTM autoencoder on live Prometheus telemetry, and recovers through the K8s API, closed loop, zero human intervention.",
+      role: "Team · Platform",
       status: "Shipped",
       metric: "5 scenarios",
       repo: "theNeuralHorizon/skam",
@@ -103,7 +103,7 @@ export const PORTFOLIO: Portfolio = {
       kind: "Mobile · ML",
       tags: ["React Native", "Kotlin", "TypeScript", "scikit-learn", "STIR/SHAKEN"],
       blurb:
-        "Android app that detects spoofed and AI-generated phone calls entirely on-device. Combines carrier-level STIR/SHAKEN attestation with a 104-feature MLP (MFCCs, jitter, shimmer, HNR) running in pure TypeScript — ~20ms inference, zero network, zero data collection.",
+        "Android app that detects spoofed and AI-generated phone calls entirely on-device. Combines carrier-level STIR/SHAKEN attestation with a 104-feature MLP (MFCCs, jitter, shimmer, HNR) running in pure TypeScript,~20ms inference, zero network, zero data collection.",
       role: "Solo · Mobile + ML",
       status: "Shipped",
       metric: "100% offline",
@@ -131,8 +131,8 @@ export const PORTFOLIO: Portfolio = {
       kind: "Fintech · AI",
       tags: ["Python", "LLM", "RAG", "FastAPI"],
       blurb:
-        "Insurance claims automation pipeline — intake, document extraction, and triage for complex multi-document claims. AI-driven OCR + structured-field extraction feed a rules + LLM reasoning layer that routes claims, flags fraud signals, and drafts adjuster notes. Built with guardrails, audit trails, and human-in-the-loop review.",
-      role: "Builder Resident · Zeoxia",
+        "Insurance claims automation pipeline, intake, document extraction, and triage for complex multi-document claims. AI-driven OCR + structured-field extraction feed a rules + LLM reasoning layer that routes claims, flags fraud signals, and drafts adjuster notes. Built with guardrails, audit trails, and human-in-the-loop review.",
+      role: "Builder · In development",
       status: "Private · in development",
       metric: "WIP",
       accent: "#c98a5a",
@@ -144,7 +144,7 @@ export const PORTFOLIO: Portfolio = {
       kind: "Security",
       tags: ["Bun", "Hono", "Go", "SvelteKit 5", "pgvector", "Claude"],
       blurb:
-        "AI-native software supply-chain security platform. Treats your supply chain as a living graph and remediation as a fleet of autonomous agents — multi-ecosystem SBOM scanning (npm, Cargo, PyPI, Go, containers, AI-BOM), LLM-powered semantic risk scoring, pgvector-indexed provenance, and n8n-driven auto-PRs.",
+        "AI-native software supply-chain security platform. Treats your supply chain as a living graph and remediation as a fleet of autonomous agents, multi-ecosystem SBOM scanning (npm, Cargo, PyPI, Go, containers, AI-BOM), LLM-powered semantic risk scoring, pgvector-indexed provenance, and n8n-driven auto-PRs.",
       role: "Solo · Full-stack + Infra",
       status: "Active",
       metric: "46+6 tests",
@@ -158,7 +158,7 @@ export const PORTFOLIO: Portfolio = {
       kind: "Quant",
       tags: ["Python", "FastAPI", "NumPy", "scikit-learn", "Streamlit", "Docker", "K8s"],
       blurb:
-        "End-to-end quantitative research stack in one repo: 12 strategies, 25+ indicators, options pricing (BS / CRR / MC), portfolio optimizers (Markowitz, HRP, Black-Litterman, CVaR), risk analytics, ML — plus a hardened REST API, web terminal, Streamlit dashboard, CLI, and K8s manifests.",
+        "End-to-end quantitative research stack in one repo: 12 strategies, 25+ indicators, options pricing (BS / CRR / MC), portfolio optimizers (Markowitz, HRP, Black-Litterman, CVaR), risk analytics, ML, plus a hardened REST API, web terminal, Streamlit dashboard, CLI, and K8s manifests.",
       role: "Solo · Library + API",
       status: "Shipped",
       metric: "322 tests",
@@ -172,7 +172,7 @@ export const PORTFOLIO: Portfolio = {
       kind: "RL · Agents",
       tags: ["OpenEnv", "FastAPI", "Docker", "LLM"],
       blurb:
-        "OpenEnv RL environment where agents act as SREs investigating production incidents across distributed microservices. 12-command action space, dense per-step rewards, red herrings at every difficulty — Kimi K2 hits 0.82 avg across three tasks. Built for the Meta × PyTorch × HuggingFace OpenEnv Hackathon.",
+        "OpenEnv RL environment where agents act as SREs investigating production incidents across distributed microservices. 12-command action space, dense per-step rewards, red herrings at every difficulty, Kimi K2 hits 0.82 avg across three tasks. Built for the Meta × PyTorch × HuggingFace OpenEnv Hackathon.",
       role: "Team · Env design",
       status: "Hackathon",
       metric: "0.82 avg",
@@ -186,7 +186,7 @@ export const PORTFOLIO: Portfolio = {
       kind: "Robotics",
       tags: ["ROS 2 Jazzy", "Gazebo Harmonic", "Python", "AprilTags"],
       blurb:
-        "End-to-end exploration-based autonomous navigation stack for the MIT × Artpark mobility hackathon Round 3. No pre-built map — robot explores a walled arena, detects 5 AprilTags, follows green then orange floor markers, and reaches a STOP tile. Seven ROS 2 packages covering perception, decision, logging.",
+        "End-to-end exploration-based autonomous navigation stack for the MIT × Artpark mobility hackathon Round 3. No pre-built map, robot explores a walled arena, detects 5 AprilTags, follows green then orange floor markers, and reaches a STOP tile. Seven ROS 2 packages covering perception, decision, logging.",
       role: "Team · Perception + Decision",
       status: "Hackathon",
       metric: "5 tags",
@@ -200,7 +200,7 @@ export const PORTFOLIO: Portfolio = {
       kind: "ML Ops",
       tags: ["Python", "Model Drift", "LLM Eval"],
       blurb:
-        "Credit-risk model drift detection and LLM hallucination monitoring — built for HackBricks 2026. Dual-surface monitoring: statistical drift on classical credit scorecards plus grounded-answer checks for LLM responses.",
+        "Credit-risk model drift detection and LLM hallucination monitoring, built for HackBricks 2026. Dual-surface monitoring: statistical drift on classical credit scorecards plus grounded-answer checks for LLM responses.",
       role: "Team · Hackathon",
       status: "Hackathon",
       metric: "Dual loop",
@@ -210,8 +210,8 @@ export const PORTFOLIO: Portfolio = {
   ],
 
   experience: [
-    { co: "Zeoxia", role: "Builder Resident (R&D) · Builder Residency v1", yr: "2026 — now" },
-    { co: "Manipal Institute of Technology", role: "B.Tech CS (AI)", yr: "2023 — 2027" },
+    { co: "Zeoxia", role: "Builder Resident (R&D) · Builder Residency v1", yr: "2026 → now" },
+    { co: "Manipal Institute of Technology", role: "B.Tech CS (AI)", yr: "2023 → 2027" },
   ],
 
   experienceDetails: [
@@ -241,17 +241,17 @@ export const PORTFOLIO: Portfolio = {
   },
 
   achievements: [
-    { title: "Google Hackathon — Finalist", desc: "Led a 5-member team to the final round among 200+ teams." },
-    { title: "Honeywell Hackathon 2025 — Top 10", desc: "Recognized for technical innovation in real-time system design." },
-    { title: "Meta × PyTorch × HF OpenEnv Hackathon", desc: "Shipped IncidentEnv — an SRE-agent RL environment with a Kimi K2 baseline averaging 0.82 across tasks." },
+    { title: "Google Hackathon, Finalist", desc: "Led a 5-member team to the final round among 200+ teams." },
+    { title: "Honeywell Hackathon 2025, Top 10", desc: "Recognized for technical innovation in real-time system design." },
+    { title: "Meta × PyTorch × HF OpenEnv Hackathon", desc: "Shipped IncidentEnv, an SRE-agent RL environment with a Kimi K2 baseline averaging 0.82 across tasks." },
   ],
 
   now: [
-    "Builder Resident at Zeoxia — shipping ClaimRail, AI-driven insurance claims automation.",
-    "Pursuing B.Tech CS (AI) at Manipal Institute of Technology, Bengaluru.",
-    "Running the deployed Predictive Maintenance System on Render + Vercel.",
-    "Building Sentinel — AI-native software supply-chain security.",
-    "Reading up on distributed systems & system design.",
+    "ClaimRail in build: multi-doc intake, OCR + structured extraction, LLM triage layer.",
+    "B.Tech CS-AI at Manipal, 2027 cohort.",
+    "Predictive Maintenance API in prod: FastAPI + Random Forest on Render and Vercel.",
+    "Sentinel: SBOM graph across npm, Cargo, PyPI, Go and containers; pgvector provenance, agentic auto-PRs.",
+    "Reading: distributed systems, consensus, queueing theory.",
   ],
 
   stats: [
