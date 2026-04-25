@@ -13,7 +13,11 @@ const SERIF = '"Instrument Serif", serif'
 
 // ── Hooks ──
 function useInView<T extends HTMLElement = HTMLElement>(
-  options: IntersectionObserverInit = { threshold: 0.15 }
+  // Trigger as soon as any part of the element enters the viewport
+  // (with a small bottom margin so it fires just before reaching the edge).
+  // This works even when the element is taller than the viewport (e.g. the
+  // 10-card project grid on mobile, where threshold 0.15 would never be met).
+  options: IntersectionObserverInit = { threshold: 0, rootMargin: "0px 0px -10% 0px" }
 ): [React.RefObject<T | null>, boolean] {
   const ref = useRef<T>(null)
   const [inView, setInView] = useState(false)
