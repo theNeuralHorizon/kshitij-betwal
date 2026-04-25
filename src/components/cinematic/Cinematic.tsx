@@ -3,8 +3,7 @@
 import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react"
 import { PORTFOLIO, type Project } from "./data"
 
-// Lazy-loaded visuals (hero robot + contact earth)
-const Spline = lazy(() => import("@splinetool/react-spline"))
+// Lazy-loaded visuals (contact earth only)
 const RotatingEarth = lazy(() => import("../ui/wireframe-dotted-globe"))
 
 // ── Typography constants ──
@@ -80,6 +79,55 @@ function injectAnimCss(): void {
     .cine-hero-meta { animation: cine-fadeUp 1s cubic-bezier(.2,.7,.2,1) .45s both; }
     .cine-hero-sweep { display: inline-block; transform-origin: left; animation: cine-sweep .9s cubic-bezier(.2,.7,.2,1) .6s both; }
     html { scroll-behavior: smooth; }
+
+    /* ── Responsive (mobile-first overrides) ── */
+    @media (max-width: 900px) {
+      .cine-section { padding: 80px 24px !important; }
+      .cine-hero { padding: 96px 24px 80px !important; min-height: auto !important; }
+      .cine-nav { padding: 14px 20px !important; gap: 8px !important; }
+      .cine-nav-links { display: none !important; }
+      .cine-nav-clock { display: none !important; }
+      .cine-grid-2, .cine-grid-2-equal { grid-template-columns: 1fr !important; gap: 28px !important; }
+      .cine-grid-2-narrow { grid-template-columns: 1fr !important; gap: 24px !important; }
+      .cine-grid-projects { grid-template-columns: 1fr !important; gap: 20px !important; }
+      .cine-work-row { grid-template-columns: 36px 1fr !important; row-gap: 4px !important; }
+      .cine-work-row > :nth-child(3), .cine-work-row > :nth-child(4) {
+        grid-column: 2 / 3 !important;
+        text-align: left !important;
+      }
+      .cine-stats { grid-template-columns: 1fr 1fr !important; }
+      .cine-stats > div:nth-child(odd) { border-right: 1px solid var(--cine-line, rgba(244,241,236,0.12)) !important; }
+      .cine-stats > div:last-child { grid-column: 1 / -1; border-right: none !important; }
+      .cine-stack-stage { padding: 24px 20px 20px !important; }
+      .cine-stack-stage-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+      .cine-stack-logo { width: 140px !important; height: 140px !important; margin: 0 auto !important; }
+      .cine-stack-meta { text-align: center; }
+      .cine-stack-meta > div:first-child { justify-content: center; }
+      .cine-marquee-text { font-size: 18px !important; }
+      .cine-calendar-grid { grid-template-columns: 1fr !important; }
+      .cine-calendar-grid > div:first-child { border-right: none !important; border-bottom: 1px solid var(--cine-line, rgba(244,241,236,0.12)) !important; }
+      .cine-earth-wrap { min-height: 320px !important; }
+      .cine-earth-inner { max-width: 360px !important; }
+      .cine-contact-bypass { grid-template-columns: 1fr !important; gap: 24px !important; }
+      .cine-footer { grid-template-columns: 1fr !important; padding: 20px 24px !important; gap: 8px !important; text-align: left !important; }
+      .cine-footer > * { text-align: left !important; }
+      .cine-hero-h1 { font-size: clamp(36px, 11vw, 64px) !important; }
+      .cine-hero-meta-row { grid-template-columns: 1fr 1fr !important; gap: 18px 24px !important; }
+    }
+    @media (max-width: 480px) {
+      .cine-section { padding: 64px 20px !important; }
+      .cine-hero { padding: 80px 20px 60px !important; }
+      .cine-stats { grid-template-columns: 1fr !important; }
+      .cine-stats > div { border-right: none !important; border-bottom: 1px solid var(--cine-line, rgba(244,241,236,0.12)) !important; }
+      .cine-stats > div:last-child { border-bottom: none !important; }
+      .cine-hero-meta-row { grid-template-columns: 1fr !important; gap: 14px !important; }
+    }
+
+    /* Don't run heavy hover transforms on touch devices */
+    @media (hover: none) {
+      .cine-card-hover:hover { transform: none !important; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .cine-reveal, .cine-stagger > * { transition: none !important; opacity: 1 !important; transform: none !important; }
       html { scroll-behavior: auto; }
@@ -167,31 +215,31 @@ interface HeroProps {
 
 function CineHeroStack({ accent, muted, fg }: HeroProps) {
   return (
-    <div style={{ position: "relative", maxWidth: 720 }}>
+    <div style={{ position: "relative", maxWidth: 880 }}>
       <div className="cine-hero-eyebrow" style={{ fontFamily: MONO, fontSize: 11, color: muted, textTransform: "uppercase", letterSpacing: "0.22em", marginBottom: 24, display: "flex", alignItems: "center", gap: 12 }}>
         <span className="cine-hero-sweep" style={{ display: "inline-block", width: 36, height: 1, background: muted }} />
         Builder Resident · Zeoxia · Open to 2026 roles
       </div>
       <h1 className="cine-hero-h1" style={{
-        fontSize: "clamp(44px, 6.4vw, 92px)",
+        fontSize: "clamp(40px, 9vw, 120px)",
         fontWeight: 500, letterSpacing: "-0.035em",
-        lineHeight: 0.98, margin: "0 0 18px",
+        lineHeight: 0.96, margin: "0 0 22px",
         color: fg,
       }}>
         Kshitij Betwal
       </h1>
       <p className="cine-hero-meta" style={{
         fontFamily: DISPLAY,
-        fontSize: "clamp(18px, 2vw, 24px)",
+        fontSize: "clamp(17px, 2.4vw, 28px)",
         fontWeight: 300,
         color: muted,
-        margin: "0 0 40px",
+        margin: "0 0 44px",
         letterSpacing: "-0.01em",
         lineHeight: 1.4,
       }}>
         I build <span style={{ fontFamily: SERIF, fontStyle: "italic", color: accent, fontWeight: 400 }}>scalable</span> software.
       </p>
-      <div className="cine-hero-meta" style={{
+      <div className="cine-hero-meta cine-hero-meta-row" style={{
         display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, auto))", gap: "28px 36px",
         fontFamily: MONO, fontSize: 10.5, color: muted, textTransform: "uppercase", letterSpacing: "0.14em",
         justifyContent: "start",
@@ -315,7 +363,7 @@ function CineStackSlideshow({ fg, muted, line, accent, cardBg, panelBg }: CineSt
       }}
     >
       {/* Stage */}
-      <div style={{
+      <div className="cine-stack-stage cine-stack-stage-grid" style={{
         display: "grid",
         gridTemplateColumns: "200px 1fr",
         gap: 48,
@@ -323,7 +371,7 @@ function CineStackSlideshow({ fg, muted, line, accent, cardBg, panelBg }: CineSt
         padding: "32px 48px 28px",
       }}>
         {/* Logo column */}
-        <div style={{ position: "relative", aspectRatio: "1 / 1", width: 200 }}>
+        <div className="cine-stack-logo" style={{ position: "relative", aspectRatio: "1 / 1", width: 200 }}>
           <div style={{
             position: "absolute", inset: "14%",
             borderRadius: "50%",
@@ -361,7 +409,7 @@ function CineStackSlideshow({ fg, muted, line, accent, cardBg, panelBg }: CineSt
         </div>
 
         {/* Meta column */}
-        <div style={{ minWidth: 0 }}>
+        <div className="cine-stack-meta" style={{ minWidth: 0 }}>
           <div style={{
             display: "flex", alignItems: "center", gap: 10,
             fontFamily: MONO, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.2em",
@@ -797,7 +845,7 @@ function Calendar({ fg, muted, line, accent, cardBg, email }: CalendarProps) {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr" }}>
+      <div className="cine-calendar-grid" style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr" }}>
         <div style={{ padding: 24, borderRight: `1px solid ${line}` }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
             <button onClick={() => nav(-1)} style={{
@@ -1043,7 +1091,7 @@ export default function Cinematic() {
       }} />
 
       {/* Top nav */}
-      <nav style={{
+      <nav className="cine-nav" style={{
         position: "sticky", top: 0, zIndex: 20,
         display: "grid", gridTemplateColumns: "1fr auto 1fr",
         alignItems: "center", padding: "18px 56px",
@@ -1056,7 +1104,7 @@ export default function Cinematic() {
           <span style={{ color: accent, fontSize: 9, marginRight: 8, verticalAlign: "middle" }}>●</span>
           KSHITIJ / '26
         </a>
-        <div style={{ display: "flex", gap: 28, fontFamily: MONO, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", position: "relative" }}>
+        <div className="cine-nav-links" style={{ display: "flex", gap: 28, fontFamily: MONO, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", position: "relative" }}>
           {navItems.map((t) => {
             const id = t.toLowerCase()
             const active = activeSection === id
@@ -1082,7 +1130,7 @@ export default function Cinematic() {
             )
           })}
         </div>
-        <div style={{ textAlign: "right", fontFamily: MONO, fontSize: 12, letterSpacing: "0.08em", color: muted }}>
+        <div className="cine-nav-clock" style={{ textAlign: "right", fontFamily: MONO, fontSize: 12, letterSpacing: "0.08em", color: muted }}>
           {clock} IST
         </div>
       </nav>
@@ -1102,46 +1150,34 @@ export default function Cinematic() {
       </div>
 
       {/* HERO */}
-      <section id="home" style={{ position: "relative", padding: "120px 56px 100px", borderBottom: `1px solid ${line}`, overflow: "hidden", minHeight: "92vh", display: "flex", alignItems: "center" }}>
-        {/* Ambient glow behind robot for cohesion */}
+      <section id="home" className="cine-section cine-hero" style={{ position: "relative", padding: "120px 56px 100px", borderBottom: `1px solid ${line}`, overflow: "hidden", minHeight: "92vh", display: "flex", alignItems: "center" }}>
+        {/* Ambient halo */}
         <div aria-hidden style={{
           position: "absolute",
-          top: "40%", right: "-6%",
-          width: "55%", height: "75%",
+          top: "50%", right: "-10%",
+          width: "60%", height: "80%",
           transform: "translateY(-50%)",
-          background: `radial-gradient(ellipse at center, ${accent}1f 0%, transparent 65%)`,
+          background: `radial-gradient(ellipse at center, ${accent}18 0%, transparent 65%)`,
           pointerEvents: "none",
           zIndex: 0,
-          filter: "blur(8px)",
+          filter: "blur(40px)",
+        }} />
+        <div aria-hidden style={{
+          position: "absolute",
+          top: "10%", left: "20%",
+          width: "40%", height: "60%",
+          background: `radial-gradient(ellipse at center, rgba(167, 139, 250, 0.08) 0%, transparent 70%)`,
+          pointerEvents: "none",
+          zIndex: 0,
+          filter: "blur(60px)",
         }} />
 
-        {/* Robot, desktop only, right half of screen, parallax + fade on scroll */}
-        <div className="cine-hero-robot" style={{
-          position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1,
-          opacity: Math.max(0, 1 - scrollY / 900),
-          transform: `translateY(${scrollY * 0.06}px)`,
-          transition: "opacity .25s",
-        }}>
-          <div style={{
-            position: "absolute", top: 0, right: 0, width: "62%", height: "100%",
-            pointerEvents: "auto",
-            // Radial mask: robot fades on all edges into page background for seamless blend
-            WebkitMaskImage: "radial-gradient(ellipse 68% 82% at 62% 50%, #000 32%, rgba(0,0,0,.9) 52%, rgba(0,0,0,.4) 75%, transparent 100%)",
-            maskImage: "radial-gradient(ellipse 68% 82% at 62% 50%, #000 32%, rgba(0,0,0,.9) 52%, rgba(0,0,0,.4) 75%, transparent 100%)",
-          }}>
-            <Suspense fallback={null}>
-              <Spline scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" style={{ width: "100%", height: "100%", background: "transparent" }} />
-            </Suspense>
-          </div>
-        </div>
-
-        <div style={{
+        <div className="cine-hero-stack" style={{
           width: "100%",
           transform: `translateY(${scrollY * 0.12}px)`,
           opacity: Math.max(0, 1 - scrollY / 750),
           transition: "opacity .2s",
           position: "relative", zIndex: 2,
-          maxWidth: "min(720px, 52%)",
         }}>
           <CineHeroStack accent={accent} muted={muted} fg={fg} />
         </div>
@@ -1158,7 +1194,7 @@ export default function Cinematic() {
 
       {/* Marquee */}
       <section style={{ borderBottom: `1px solid ${line}`, overflow: "hidden", padding: "18px 0", position: "relative", background: panelBg }}>
-        <div style={{
+        <div className="cine-marquee-text" style={{
           display: "flex", gap: 40, whiteSpace: "nowrap",
           animation: "cine-marquee 60s linear infinite",
           fontFamily: DISPLAY, fontSize: 26, fontWeight: 400, letterSpacing: "-0.02em",
@@ -1175,9 +1211,9 @@ export default function Cinematic() {
       </section>
 
       {/* ABOUT */}
-      <section id="about" style={{ padding: "100px 56px", borderBottom: `1px solid ${line}`, position: "relative", background: panelBg }}>
+      <section id="about" className="cine-section" style={{ padding: "100px 56px", borderBottom: `1px solid ${line}`, position: "relative", background: panelBg }}>
         <Reveal variant="slide-left"><SectionKicker n="01" label="About" sub="The short version" accent={accent} muted={muted} /></Reveal>
-        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 80, marginTop: 60, maxWidth: 1200 }}>
+        <div className="cine-grid-2" style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 80, marginTop: 60, maxWidth: 1200 }}>
           <Reveal delay={0.1}>
             <h3 style={{
               fontSize: "clamp(28px, 3.8vw, 52px)", fontWeight: 400,
@@ -1215,11 +1251,11 @@ export default function Cinematic() {
       </section>
 
       {/* WORK */}
-      <section id="work" style={{ padding: "100px 56px", borderBottom: `1px solid ${line}`, position: "relative" }}>
+      <section id="work" className="cine-section" style={{ padding: "100px 56px", borderBottom: `1px solid ${line}`, position: "relative" }}>
         <Reveal variant="slide-left"><SectionKicker n="02" label="Work & Education" sub="R&D residency + CS @ Manipal Institute of Technology" accent={accent} muted={muted} /></Reveal>
         <Stagger style={{ marginTop: 60, maxWidth: 1100 }}>
           {PORTFOLIO.experience.map((e, i) => (
-            <div key={i} style={{
+            <div key={i} className="cine-work-row" style={{
               display: "grid", gridTemplateColumns: "80px 1fr 180px 140px", gap: 24,
               padding: "28px 0", alignItems: "baseline",
               borderTop: i === 0 ? `1px solid ${line}` : "none",
@@ -1239,7 +1275,7 @@ export default function Cinematic() {
           ))}
         </Stagger>
 
-        <Reveal variant="scale-up" style={{
+        <Reveal variant="scale-up" className="cine-stats" style={{
           marginTop: 48, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 0,
           border: `1px solid ${line}`, borderRadius: 8, overflow: "hidden",
           background: panelBg,
@@ -1258,7 +1294,7 @@ export default function Cinematic() {
       </section>
 
       {/* PROJECTS */}
-      <section id="projects" style={{ padding: "100px 56px", borderBottom: `1px solid ${line}`, position: "relative", background: panelBg }}>
+      <section id="projects" className="cine-section" style={{ padding: "100px 56px", borderBottom: `1px solid ${line}`, position: "relative", background: panelBg }}>
         <Reveal variant="slide-left"><SectionKicker n="03" label="Projects" sub="Selected case studies" accent={accent} muted={muted} /></Reveal>
 
         <Reveal delay={0.1} style={{ display: "flex", gap: 10, margin: "40px 0 56px", fontFamily: MONO, fontSize: 11, flexWrap: "wrap" }}>
@@ -1281,7 +1317,7 @@ export default function Cinematic() {
           ))}
         </Reveal>
 
-        <Stagger key={filter} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: 28 }}>
+        <Stagger key={filter} className="cine-grid-projects" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 28 }}>
           {filtered.map((p, i) => (
             <CineCard key={p.id} p={p} i={i} fg={fg} muted={muted} line={line} accent={accent} cardBg={cardBg} />
           ))}
@@ -1289,7 +1325,7 @@ export default function Cinematic() {
       </section>
 
       {/* STACK */}
-      <section id="stack" style={{ padding: "100px 56px", borderBottom: `1px solid ${line}`, position: "relative" }}>
+      <section id="stack" className="cine-section" style={{ padding: "100px 56px", borderBottom: `1px solid ${line}`, position: "relative" }}>
         <Reveal variant="slide-left"><SectionKicker n="04" label="Stack" sub="Top 15 tools I reach for, in rotation" accent={accent} muted={muted} /></Reveal>
         <Reveal delay={0.1}>
           <CineStackSlideshow fg={fg} muted={muted} line={line} accent={accent} cardBg={cardBg} panelBg={panelBg} />
@@ -1297,7 +1333,7 @@ export default function Cinematic() {
       </section>
 
       {/* CONTACT */}
-      <section id="contact" style={{ padding: "100px 56px 80px", position: "relative", overflow: "hidden" }}>
+      <section id="contact" className="cine-section" style={{ padding: "100px 56px 80px", position: "relative", overflow: "hidden" }}>
         <div style={{
           position: "absolute", inset: 0,
           background: `radial-gradient(900px 500px at 50% 30%, ${accent}10 0%, transparent 65%)`,
@@ -1330,7 +1366,7 @@ export default function Cinematic() {
           </Reveal>
 
           {/* Row 1: Headline on left, Reach-me on right */}
-          <div style={{
+          <div className="cine-grid-2-narrow" style={{
             display: "grid",
             gridTemplateColumns: "minmax(0, 1.25fr) minmax(0, 1fr)",
             gap: 48,
@@ -1411,7 +1447,7 @@ export default function Cinematic() {
           </div>
 
           {/* Row 2: Calendar on left, Earth (transparent) on right, matched heights */}
-          <div style={{
+          <div className="cine-grid-2-equal" style={{
             display: "grid",
             gridTemplateColumns: "minmax(0, 1.15fr) minmax(0, 1fr)",
             gap: 48,
@@ -1423,7 +1459,7 @@ export default function Cinematic() {
 
             {/* Transparent earth, no card, drops onto page bg */}
             <Reveal delay={0.28} variant="scale-up">
-              <div style={{
+              <div className="cine-earth-wrap" style={{
                 position: "relative",
                 width: "100%",
                 height: "100%",
@@ -1439,7 +1475,7 @@ export default function Cinematic() {
                   pointerEvents: "none",
                   zIndex: 0,
                 }} />
-                <div style={{ position: "relative", width: "100%", maxWidth: 520, zIndex: 1 }}>
+                <div className="cine-earth-inner" style={{ position: "relative", width: "100%", maxWidth: 520, zIndex: 1 }}>
                   <Suspense fallback={null}>
                     <RotatingEarth width={520} height={520} />
                   </Suspense>
@@ -1451,7 +1487,7 @@ export default function Cinematic() {
       </section>
 
       {/* Footer */}
-      <footer style={{
+      <footer className="cine-footer" style={{
         borderTop: `1px solid ${line}`,
         padding: "24px 56px",
         display: "grid", gridTemplateColumns: "1fr 1fr 1fr",
