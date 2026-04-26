@@ -25,6 +25,8 @@ jobs:
         uses: withastro/action@v3
         with:
           node-version: 22
+        env:
+          PUBLIC_GOATCOUNTER_CODE: ${{ vars.PUBLIC_GOATCOUNTER_CODE }}
 
   deploy:
     needs: build
